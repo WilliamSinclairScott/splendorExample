@@ -1,28 +1,5 @@
 /*
 Thinking out sudo code logic
-gameState ()
-Init(playerCount){
-    lvl1Deck.shuffle()
-    lvl2Deck.shuffle()
-    lvl3Deck.shuffle()
-    nobleDeck.shuffle()
-    setBoardSzie(playerCount){
-        if 2{
-            tokens.foreach((color)=>remove 3 tokens)
-            boardState.nobles = 3
-        }
-        else if 3{
-            tokens.foreach((color)=>remove 2 tokens)
-            boardState.nobles = 4
-        }
-        else if 4{
-            boardState.nobles = 5
-        }
-        else if 4{
-            boardState.nobles = 4
-        }
-    }
-}
 
 Player.actions
     click card ? buyCard : throw(ErrorYou'rePoor)
@@ -36,7 +13,7 @@ Player.actions
 Player.cleanup
 */
 
-class gameState {
+class Game {
     /**
      * Each array is a deck of Deck Objects predefined in the database
      * @param {[Object]} oneDeck 
@@ -47,9 +24,9 @@ class gameState {
     constructor(oneDeck, twoDeck, threeDeck, nobleDeck) {
         this.playerCount = 0;
         this.players = [];
-        this.lvlOneDeck = oneDeck
-        this.lvlTwoDeck = twoDeck
-        this.lvlThreeDeck = threeDeck
+        this.lvlOneDeck = shuffleArray(oneDeck)
+        this.lvlTwoDeck = shuffleArray(twoDeck)
+        this.lvlThreeDeck = shuffleArray(threeDeck)
         //noting that noblesRevealed === playerCount+1
         this.nobleDeck = nobleDeck
         this.tokens = {
@@ -63,7 +40,7 @@ class gameState {
     }
     /**
      * Initializes available tokens for the game based on the number of players
-     * @param {number} numberOfPlayers 
+     * @param {number} numberOfPlayers 2,3,4
      */
     setPlayerCountInit = () => {
 
@@ -98,15 +75,32 @@ class gameState {
         }
     }
     /**
-     * Adds a player to the gameState
+     * Adds a player to the Game
      * @param {Player} playerObject 
      */
     addPlayer = (playerObject) => {
         this.players.push(playerObject)
         this.playerCount += 1
     }
+    /**
+     * @param {number} number 1,2,3
+     * @returns nextCardObjectInArray
+     */
+    dealNewCardlevel = (number) => {
+        if(number === 1){
+            return this.lvlOneDeck.pop
+        }else if(number === 2){
+            return this.lvlTwoDeck.pop
+        }else if(number === 3){
+            return this.lvlThreeDeck.pop
+        }
+        else{
+            throw new Error('Invalid level of card!');
+        }
+    }
 
 }
+
 class Player {
 
     constructor(playerName, playerID) {
@@ -130,7 +124,7 @@ class Player {
         this.victoryPoints = 0
     }
 }
-const testGame = new gameState([], [], [], [])
+const testGame = new Game([], [], [], [])
 
 
 

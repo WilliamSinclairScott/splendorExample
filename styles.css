@@ -1,0 +1,187 @@
+html, body {
+  background-color: blanchedalmond;
+  height: 100%;
+  margin: 0; 
+  padding: 0;
+}
+
+.container {  
+  height: 100%; 
+  display: grid;
+  grid-template-columns: 1.2fr 1.2fr 1.2fr 1.2fr 0.5fr 0.7fr 1fr;
+  grid-template-rows: 1.1fr 1.1fr 1.1fr 0.8fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "Level3Zone Level3Zone Level3Zone Level3Zone Resources NobleZone NobleZone"
+    "Level2Zone Level2Zone Level2Zone Level2Zone Resources OtherPlayers OtherPlayers"
+    "Level1Zone Level1Zone Level1Zone Level1Zone Resources CurrentPlayer CurrentPlayer"
+    "LogBox LogBox LogBox LogBox LogBox CurrentPlayer CurrentPlayer";
+}
+.cardContainer{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  border: 2px solid whitesmoke;
+  border-radius: 30px;
+  justify-content: space-between;
+}
+.victorypointValue{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+.costElement{
+  color: white;
+  text-align: center;
+  border: 1px solid white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  margin: 0px 0px 8px 8px;
+}
+.costOfCard{
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: flex-end;
+}
+.colorG{
+  background: green;
+}
+.colorU{
+  background: blue;
+}
+.colorR{
+  background: red;
+}
+.colorB{
+  background: black;
+}
+.colorW{
+  background: whitesmoke;
+  color: black;
+  border: 1px solid black;
+}
+.colorY{
+  background: gold;
+}
+
+.Level3Zone {
+  grid-area: Level3Zone;
+  display: flex;
+  margin: 10px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.Level2Zone { grid-area: Level2Zone; display: flex;}
+
+.Level1Zone { grid-area: Level1Zone; display: flex; }
+
+.Resources {  display: grid;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-auto-columns: 1fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-area: Resources;
+}
+
+.resourceG { grid-area: 1 / 1 / 2 / 2; }
+
+.ResourceR { grid-area: 3 / 1 / 4 / 2; }
+
+.ResourceU { grid-area: 2 / 1 / 3 / 2; }
+
+.ResourceB { grid-area: 4 / 1 / 5 / 2; }
+
+.ResourceW { grid-area: 5 / 1 / 6 / 2; }
+
+.ResourceY { grid-area: 6 / 1 / 7 / 2; }
+
+.NobleZone { grid-area: NobleZone;  display: flex;}
+
+.OtherPlayers { 
+  grid-area: OtherPlayers;
+  border: 5px dotted darkmagenta;
+  }
+
+.CurrentPlayer {  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  grid-template-rows: 1fr 1.5fr 0.5fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "PlayerResources ReservedCards"
+    "PlayerResources ReservedCards"
+    "PlayerResources VParea";
+  grid-area: CurrentPlayer;
+}
+
+.cardExample{
+  width: 100%;
+  height: 100%;
+  background-color: green;
+  border: 5px dotted black;
+}
+.resourceExample{
+  width: 100%;
+  height: 100%;
+  background-color: plum;
+  border: 5px dotted black;
+}
+.nobleExample{
+  width: 100%;
+  height: 100%;
+  background-color: red;
+  border: 5px dotted black;
+}
+
+.PlayerResources {  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-auto-columns: 1fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "PlayerRG"
+    "PlayerRU"
+    "PlayerRR"
+    "PlayerRB"
+    "PlayerRW"
+    "PlayerRY";
+  grid-area: PlayerResources;
+}
+
+.PlayerRY { grid-area: PlayerRY; display: flex;}
+
+.PlayerRW { grid-area: PlayerRW; display: flex;}
+
+.PlayerRB { grid-area: PlayerRB; display: flex;}
+
+.PlayerRR { grid-area: PlayerRR; display: flex;}
+
+.PlayerRU { grid-area: PlayerRU; display: flex;}
+
+.PlayerRG { grid-area: PlayerRG; display: flex;}
+
+.ReservedCards { 
+  grid-area: ReservedCards;
+  border: 5px dotted darkred;
+}
+
+.VParea {
+  grid-area: VParea;
+  border: 5px dotted darkblue;
+}
+
+.LogBox { grid-area: LogBox;
+  background: grey; height:100%;
+  width: 100%;
+}
