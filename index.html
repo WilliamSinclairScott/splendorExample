@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+  <script src="csv.js" type="module" defer></script>
 </head>
 <body>
   <div class="container">
@@ -13,36 +15,78 @@
         <div class="victorypointValue">4</div>
         <div class="costOfCard">
           <div class="costElement colorU">2</div>
+          <div class="costElement colorR">1</div>
+          <div class="costElement colorB">3</div>
+        </div>
+      </div>
+      <div class="cardContainer colorU">
+        <div class="victorypointValue">4</div>
+        <div class="costOfCard">
+          <div class="costElement colorR">2</div>
           <div class="costElement colorB">1</div>
           <div class="costElement colorW">3</div>
         </div>
       </div>
-      <div class="cardContainer colorG">
+      <div class="cardContainer colorR">
         <div class="victorypointValue">4</div>
         <div class="costOfCard">
-          <div class="costElement colorU">2</div>
-          <div class="costElement colorB">1</div>
-          <div class="costElement colorW">3</div>
-        </div>
-      </div>
-      <div class="cardContainer colorG">
-        <div class="victorypointValue">4</div>
-        <div class="costOfCard">
-          <div class="costElement colorU">2</div>
-          <div class="costElement colorB">1</div>
-          <div class="costElement colorW">3</div>
+          <div class="costElement colorB">2</div>
+          <div class="costElement colorW">1</div>
+          <div class="costElement colorG">3</div>
         </div>
       </div>
     </div>
     <div class="Level2Zone">
-      <div class="cardExample"></div>
-      <div class="cardExample"></div>
-      <div class="cardExample"></div>
+      <div class="cardContainer colorU">
+        <div class="victorypointValue">4</div>
+        <div class="costOfCard">
+          <div class="costElement colorB">2</div>
+          <div class="costElement colorW">1</div>
+          <div class="costElement colorG">3</div>
+        </div>
+      </div>
+      <div class="cardContainer colorR">
+        <div class="victorypointValue">4</div>
+        <div class="costOfCard">
+          <div class="costElement colorW">2</div>
+          <div class="costElement colorG">1</div>
+          <div class="costElement colorU">3</div>
+        </div>
+      </div>
+      <div class="cardContainer colorR">
+        <div class="victorypointValue">4</div>
+        <div class="costOfCard">
+          <div class="costElement colorU">2</div>
+          <div class="costElement colorR">1</div>
+          <div class="costElement colorW">3</div>
+        </div>
+      </div>
     </div>
     <div class="Level1Zone">
-      <div class="cardExample"></div>
-      <div class="cardExample"></div>
-      <div class="cardExample"></div>
+      <div class="cardContainer colorB">
+        <div class="victorypointValue">4</div>
+        <div class="costOfCard">
+          <div class="costElement colorW">2</div>
+          <div class="costElement colorG">1</div>
+          <div class="costElement colorB">3</div>
+        </div>
+      </div>
+      <div class="cardContainer colorU">
+        <div class="victorypointValue">4</div>
+        <div class="costOfCard">
+          <div class="costElement colorU">2</div>
+          <div class="costElement colorB">1</div>
+          <div class="costElement colorG">3</div>
+        </div>
+      </div>
+      <div class="cardContainer colorG">
+        <div class="victorypointValue">4</div>
+        <div class="costOfCard">
+          <div class="costElement colorU">2</div>
+          <div class="costElement colorB">1</div>
+          <div class="costElement colorW">3</div>
+        </div>
+      </div>
     </div>
     <div class="Resources">
       <div class="resourceG">
@@ -65,7 +109,10 @@
       </div>
     </div>
     <div class="NobleZone">
-      <div class="nobleExample"></div>
+      <div class="nobleCardContainer">
+        <div class="nobleRequire colorR"></div>
+        <div class="nobleRequire colorR"></div>
+      </div>
       <div class="nobleExample"></div>
       <div class="nobleExample"></div>
       <div class="nobleExample"></div>

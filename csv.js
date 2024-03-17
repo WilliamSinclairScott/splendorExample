@@ -91,7 +91,28 @@ Level,Color,PV,Black,Blue,Green,Red,White
 3,Red,4,0,3,6,3,0
 3,Red,5,0,0,7,3,0
 `;
-
+class noble {
+    constructor(PV,black,blue,green,red,white){
+        this.PV = PV
+        this.Black = black
+        this.Blue = blue
+        this.Green = green
+        this.Red = red
+        this.White = white
+    }
+}
+const nobleObjects = [
+    new noble(3,0,3,3,3,0),
+    new noble(3,4,0,0,0,4),
+    new noble(3,3,0,3,3,0),
+    new noble(3,0,0,3,3,0),
+    new noble(3,0,3,3,0,3),
+    new noble(3,3,3,0,0,3),
+    new noble(3,0,4,4,0,0),
+    new noble(3,4,0,0,4,0),
+    new noble(3,0,4,0,0,4),
+    new noble(3,0,0,4,4,0),
+];
 // Splitting the CSV data into rows
 const rows = csvData.trim().split('\n').map(row => row.split(','));
 
@@ -149,3 +170,10 @@ console.log(level2Objects);
 
 console.log("\nLevel 3 Objects:");
 console.log(level3Objects);
+
+console.log("\nNoble Objects:");
+console.log(nobleObjects);
+
+const shipIt = {level1Objects,level2Objects,level3Objects,nobleObjects};
+
+export default shipIt;

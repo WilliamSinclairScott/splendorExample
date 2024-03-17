@@ -12,6 +12,13 @@ Player.actions
 
 Player.cleanup
 */
+/**
+ * 
+ * Importing all my data from another file for ease on scaling later.
+ * 
+ * 
+ */
+import shipIt from "./csv";
 
 class Game {
     /**
@@ -124,7 +131,7 @@ class Player {
         this.victoryPoints = 0
     }
 }
-const testGame = new Game([], [], [], [])
+const testGame = new Game(shipIt.level1Objects, shipIt.level2Objects, shipIt.level3Objects, shipIt.nobleObjects)
 
 
 

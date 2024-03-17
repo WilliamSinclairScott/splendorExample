@@ -18,11 +18,60 @@ html, body {
     "Level1Zone Level1Zone Level1Zone Level1Zone Resources CurrentPlayer CurrentPlayer"
     "LogBox LogBox LogBox LogBox LogBox CurrentPlayer CurrentPlayer";
 }
+/* Color pallets for demo */
+.colorG{
+  background: green;
+}
+.colorU{
+  background: blue;
+}
+.colorR{
+  background: red;
+}
+.colorB{
+  background: black;
+}
+.colorW{
+  background: whitesmoke;
+  color: black;
+  border: 1px solid black;
+}
+.colorY{
+  background: gold;
+}
+
+/* card zones and child objects */
+.Level3Zone {
+  grid-area: Level3Zone;
+  display: flex;
+  margin: 10px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.Level2Zone { 
+  grid-area: Level2Zone; 
+  display: flex;
+  margin: 10px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.Level1Zone { 
+  grid-area: Level1Zone; 
+  display: flex; 
+  margin: 10px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+}
 .cardContainer{
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
+  width: 33.33%;
   height: 100%;
   border: 2px solid whitesmoke;
   border-radius: 30px;
@@ -51,40 +100,8 @@ html, body {
   width: 100%;
   align-items: flex-end;
 }
-.colorG{
-  background: green;
-}
-.colorU{
-  background: blue;
-}
-.colorR{
-  background: red;
-}
-.colorB{
-  background: black;
-}
-.colorW{
-  background: whitesmoke;
-  color: black;
-  border: 1px solid black;
-}
-.colorY{
-  background: gold;
-}
 
-.Level3Zone {
-  grid-area: Level3Zone;
-  display: flex;
-  margin: 10px;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-evenly;
-}
-
-.Level2Zone { grid-area: Level2Zone; display: flex;}
-
-.Level1Zone { grid-area: Level1Zone; display: flex; }
-
+/* Resource Tokens */
 .Resources {  display: grid;
   grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-auto-columns: 1fr;
@@ -105,13 +122,26 @@ html, body {
 
 .ResourceY { grid-area: 6 / 1 / 7 / 2; }
 
-.NobleZone { grid-area: NobleZone;  display: flex;}
+/* Noble Card area */
+.NobleZone {
+  grid-area: NobleZone;  
+  display: flex;
 
+}
+.nobleCardContainer{
+  width: 100%;
+  height: 100%;
+  border: 5px solid whitesmoke;
+}
+
+/* other player information */
 .OtherPlayers { 
   grid-area: OtherPlayers;
-  border: 5px dotted darkmagenta;
+  border: 2px dotted darkmagenta;
   }
 
+
+/* current player information */
 .CurrentPlayer {  display: grid;
   grid-template-columns: 1fr 1.3fr;
   grid-template-rows: 1fr 1.5fr 0.5fr;
@@ -122,25 +152,6 @@ html, body {
     "PlayerResources ReservedCards"
     "PlayerResources VParea";
   grid-area: CurrentPlayer;
-}
-
-.cardExample{
-  width: 100%;
-  height: 100%;
-  background-color: green;
-  border: 5px dotted black;
-}
-.resourceExample{
-  width: 100%;
-  height: 100%;
-  background-color: plum;
-  border: 5px dotted black;
-}
-.nobleExample{
-  width: 100%;
-  height: 100%;
-  background-color: red;
-  border: 5px dotted black;
 }
 
 .PlayerResources {  display: grid;
@@ -179,6 +190,20 @@ html, body {
 .VParea {
   grid-area: VParea;
   border: 5px dotted darkblue;
+}
+
+/* place holders, remove as demo is created */
+.cardExample{
+  width: 100%;
+  height: 100%;
+  background-color: green;
+  border: 5px dotted black;
+}
+.resourceExample{
+  width: 100%;
+  height: 100%;
+  background-color: plum;
+  border: 5px dotted black;
 }
 
 .LogBox { grid-area: LogBox;
