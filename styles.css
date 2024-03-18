@@ -64,6 +64,9 @@ html, body {
   align-items: center;
   color: white;
 }
+.victorypointValue:empty{
+  display: none;
+}
 .costElement{
   color: white;
   text-align: center;

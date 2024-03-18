@@ -8,16 +8,16 @@ import { level1Objects, level2Objects, level3Objects, nobleObjects } from './csv
 
 // Global Variables
 const colorToClass = {
-    green : 'colorG',
-    blue : 'colorU',
-    red : 'colorR',
-    white : 'colorW',
-    black : 'colorB'
+    Green : 'colorG',
+    Blue : 'colorU',
+    Red : 'colorR',
+    White : 'colorW',
+    Black : 'colorB'
 }
 
 const cardAreaZone3 = document.getElementById('Level3Zone')
 const cardAreaZone2 = document.getElementById('Level2Zone')
-const cardAreaZone1 = document.getElementById('Level2Zone')
+const cardAreaZone1 = document.getElementById('Level1Zone')
 const nobleArea = document.getElementById('NobleZone')
 
 //
@@ -36,7 +36,7 @@ class Game {
         this.lvlTwoDeck = shuffleArray(twoDeck)
         this.lvlThreeDeck = shuffleArray(threeDeck)
         //noting that noblesRevealed === playerCount+1
-        this.nobleDeck = nobleDeck
+        this.nobleDeck = shuffleArray(nobleDeck)
         this.tokens = {
             Green: 7,
             Blue: 7,
@@ -96,18 +96,18 @@ class Game {
      */
     dealNewCardlevel = (number) => {
         if(number === 1){
-            return this.lvlOneDeck.pop
+            return this.lvlOneDeck.pop()
         }else if(number === 2){
-            return this.lvlTwoDeck.pop
+            return this.lvlTwoDeck.pop()
         }else if(number === 3){
-            return this.lvlThreeDeck.pop
+            return this.lvlThreeDeck.pop()
         }
         else{
             throw new Error('Invalid level of card!');
         }
     }
     dealNewNobleCard = () => {
-        return this.nobleDeck.pop
+        return this.nobleDeck.pop()
     }
 }
 
@@ -305,24 +305,24 @@ function initateGame(gameObject) {
     gameObject.setPlayerCountInit()
     
     //create new lvl1 cards
-    while(cardAreaZone1.childElementCount != 3){
-        cardAreaZone1.appendChild(createNewCardElement(gameObject.dealNewCardlevel(1)))
-    }
+    cardAreaZone1.appendChild(createNewCardElement(gameObject.dealNewCardlevel(1)))
+    cardAreaZone1.appendChild(createNewCardElement(gameObject.dealNewCardlevel(1)))
+    cardAreaZone1.appendChild(createNewCardElement(gameObject.dealNewCardlevel(1)))
     //create new lvl2 cards
-    while(cardAreaZone2.childElementCount != 3){
-        cardAreaZone2.appendChild(createNewCardElement(gameObject.dealNewCardlevel(2)))
-        }
+    cardAreaZone2.appendChild(createNewCardElement(gameObject.dealNewCardlevel(2)))
+    cardAreaZone2.appendChild(createNewCardElement(gameObject.dealNewCardlevel(2)))
+    cardAreaZone2.appendChild(createNewCardElement(gameObject.dealNewCardlevel(2)))
     //create new lvl3 cards
-    while(cardAreaZone3.childElementCount != 3){
-        cardAreaZone1.appendChild(createNewCardElement(gameObject.dealNewCardlevel(3)))
-        }
+    cardAreaZone3.appendChild(createNewCardElement(gameObject.dealNewCardlevel(3)))
+    cardAreaZone3.appendChild(createNewCardElement(gameObject.dealNewCardlevel(3)))
+    cardAreaZone3.appendChild(createNewCardElement(gameObject.dealNewCardlevel(3)))
     //Draw noble tokens
     for(let i = 0; i <= gameObject.playerCount; i++){
         createNobleCardAddToNobleZone(gameObject.dealNewNobleCard())
     }
     //initialize global tokens
     const startingResources = {
-        "resourceG": gameObject.tokens.Green,
+        "ResourceG": gameObject.tokens.Green,
         "ResourceR": gameObject.tokens.Red,
         "ResourceU": gameObject.tokens.Blue,
         "ResourceB": gameObject.tokens.Black,
@@ -354,7 +354,10 @@ function createNobleCardAddToNobleZone(nobleInstance) {
         const requirement = resourceColors[color];
         if (requirement > 0) {
             const nobleRequire = document.createElement('div');
-            nobleRequire.classList.add('nobleRequire', `color${color.charAt(0).toUpperCase()}`);
+            nobleRequire.classList.add('nobleRequire', `color${
+                (color === `Blue`) ? 
+                color.charAt(2).toUpperCase() : color.charAt(0).toUpperCase()
+            }`);
             nobleRequire.textContent = requirement;
             nobleCardContainer.appendChild(nobleRequire);
         }
@@ -401,12 +404,12 @@ function updateResourceNumbers(newNumbers) {
 function createNewCardElement(cardObject) {
     // Create a new div element
     let cardContainer = document.createElement("div");
-    cardContainer.classList.add("cardContainer", colorToClass[cardObject.color]);
+    cardContainer.classList.add("cardContainer", colorToClass[cardObject.Color]);
 
     // Create and append victory point value element
     let victorypointValue = document.createElement("div");
     victorypointValue.classList.add("victorypointValue");
-    victorypointValue.textContent = `${cardObject.pv}`;
+    victorypointValue.textContent = `${cardObject.PV}`;
     cardContainer.appendChild(victorypointValue);
 
     // Create and append cost of card element
@@ -414,12 +417,12 @@ function createNewCardElement(cardObject) {
     costOfCard.classList.add("costOfCard");
 
     // Create and append cost elements
-    for (let key in obj) {
-        if (key !== "color" && key !== "pv" && obj[key] !== 0) {
+    for (let key in cardObject) {
+        if (key !== "Color" && key !== "PV" && cardObject[key] !== 0) {
             let costElement = document.createElement("div");
             costElement.classList.add("costElement", colorToClass[key]);
-            costElement.textContent = `${obj[key]}`;
-            costOfCard.appendChild(costElementU);
+            costElement.textContent = `${cardObject[key]}`;
+            costOfCard.appendChild(costElement);
         }
       }
     // Put them all together
