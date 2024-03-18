@@ -9,7 +9,7 @@ html, body {
   height: 100%; 
   display: grid;
   grid-template-columns: 1.2fr 1.2fr 1.2fr 1.2fr 0.5fr 0.7fr 1fr;
-  grid-template-rows: 1.1fr 1.1fr 1.1fr 0.8fr;
+  grid-template-rows: 1.2fr 1.2fr 1.2fr 0.5fr;
   gap: 0px 0px;
   grid-auto-flow: row;
   grid-template-areas:
@@ -189,7 +189,6 @@ html, body {
   grid-area: OtherPlayers;
   display: flex;
   border: 2px dotted darkmagenta;
-  flex-wrap: wrap;
   flex-direction: column-reverse;
 }
 
@@ -197,15 +196,25 @@ html, body {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  max-width: calc(75%); /* Adjust the max-width to fit within the parent container */
+  max-width: calc(95%); /* Adjust the max-width to fit within the parent container */
 }
 
 .OtherPlayers div > div > div {
-  flex-basis: calc(16.666%);
+  flex-basis: calc(15%);
+  height: 1rem;
+  border: 1px solid black;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: .8rem; /* Adjust as needed */
+  margin-bottom: 2px;
+  font-size: .5rem;
 }
 
-.OtherPlayers .reserved {
-  position: relative;
+.OtherPlayers div > div > div:nth-last-child(n+7) {
+  border-radius: 20%;
+  font-size: .5rem;
 }
 
 /* current player information */
