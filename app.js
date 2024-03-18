@@ -3,7 +3,7 @@
  * Importing all my data from another file for ease on scaling later.
  * 
  */
-import shipIt from "./csv";
+import { level1Objects, level2Objects, level3Objects, nobleObjects } from './csv.js';
 
 
 // Global Variables
@@ -271,12 +271,17 @@ Player.cleanup
 // };
 //-------------------------------------Classes Above -----------------------------------------------
 
-
-const testGame = new Game(shipIt.level1Objects, shipIt.level2Objects, shipIt.level3Objects, shipIt.nobleObjects)
-const testPlayer1 = new Player(William,12345)
-const testPlayer2 = new Player(Callum,23456)
-const testPlayer3 = new Player(Lily,34657)
-const testPlayer4 = new Player(Sara,45678)
+// console.log(level1Objects);
+// console.log(level2Objects);
+// console.log(level3Objects);
+// console.log(nobleObjects);
+const testGame = new Game(level1Objects,level2Objects, level3Objects, nobleObjects)
+console.log(testGame)
+console.log(Game);
+const testPlayer1 = new Player(`William`,12345)
+const testPlayer2 = new Player(`Callum`,23456)
+const testPlayer3 = new Player(`Lily`,34657)
+const testPlayer4 = new Player(`Sara`,45678)
 
 const cardAreaZone3 = document.getElementById('Level3Zone')
 const cardAreaZone2 = document.getElementById('Level2Zone')
@@ -312,8 +317,12 @@ function initateGame(gameObject) {
     createNewCardElement(testGame.dealNewCardlevel(3))
     createNewCardElement(testGame.dealNewCardlevel(3))
 
+    //Draw noble tokens
+    for(let i = 0; i < testGame.playerCount; i++){
+        
+    }
     //initialize global tokens
-    
+
 }
 
 /**
@@ -359,8 +368,7 @@ function createNewCardElement(cardObject) {
 function shuffleArray(array) {
     let currentIndex = array.length, randomIndex;
     // While there remain elements to shuffle.
-    while (currentIndex > 0) {
-
+    while (currentIndex !== 0) {
         // Pick a remaining element.
         randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex--;

@@ -162,18 +162,18 @@ rows.forEach(row => {
     }
 });
 
-console.log("Level 1 Objects:");
-console.log(level1Objects);
+// console.log("Level 1 Objects:");
+// console.log(level1Objects);
 
-console.log("\nLevel 2 Objects:");
-console.log(level2Objects);
+// console.log("\nLevel 2 Objects:");
+// console.log(level2Objects);
 
-console.log("\nLevel 3 Objects:");
-console.log(level3Objects);
+// console.log("\nLevel 3 Objects:");
+// console.log(level3Objects);
 
-console.log("\nNoble Objects:");
-console.log(nobleObjects);
+// console.log("\nNoble Objects:");
+// console.log(nobleObjects);
 
-const shipIt = {level1Objects,level2Objects,level3Objects,nobleObjects};
+//const shipIt = {level1Objects,level2Objects,level3Objects,nobleObjects};
 
-export default shipIt;
+export { level1Objects, level2Objects, level3Objects, nobleObjects };
