@@ -245,15 +245,19 @@ html, body {
 
 .ReservedCards { 
   grid-area: ReservedCards;
-  border: 5px dotted darkred;
+  border: 2px dotted darkred;
 }
 
 .VParea {
   grid-area: VParea;
-  border: 5px dotted darkblue;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-
-/* place holders, remove as demo is created */
+.VParea button {
+  width: 80%;
+  height: 2rem;
+}
 
 .LogBox { grid-area: LogBox;
   background: slategrey; 

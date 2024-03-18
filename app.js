@@ -110,7 +110,7 @@ class Game {
     }
     /**
      * @param {number} number 1,2,3
-     * @returns nextCardObjectInArray
+     * @returns nextCardObject In Array
      */
     dealNewCardlevel = (number) => {
         if(number === 1){
@@ -149,8 +149,123 @@ class Player {
         }
         this.victoryPoints = 0
     }
+    /**
+     * method used to check if the player needs to discard tokens
+     * @returns boolean if player has > 10 tokens
+     */
+    hasTooManyTokens = () => {
+        total = (this.tokens.Green + this.tokens.Blue + this.tokens.Red + 
+                this.tokens.White + this.tokens.Black + this.tokens.Yellow)
+        if (total > 10) {
+            return true
+        }
+        return false
+    }
+    /**
+     * Checks to see if the player can buy input card
+     * @param {*} cardObject the card that you want to check if it can be bought
+     * @returns boolean if player can buy the card
+     */
+    canBuyCard = (cardObject) => {
+        // without the gold token (yellow)
+        if (
+            this.tokens.Black >= cardObject.black &&
+            this.tokens.Blue >= cardObject.blue &&
+            this.tokens.Green >= cardObject.green &&
+            this.tokens.Red >= cardObject.red &&
+            this.tokens.White >= cardObject.white
+        ){ return true}
+        //wDo we even check about for "yellow" logic?
+        else if (this.tokens.Yellow > 0) {
+            //have to check to see how many gold tokens we need.
+
+            //init an array of all the tokens deficit
+            let black = this.tokens.Black - cardObject.black 
+            let blue = this.tokens.Blue - cardObject.blue 
+            let green = this.tokens.Green - cardObject.green
+            let red = this.tokens.Red - cardObject.red
+            let white = this.tokens.White - cardObject.white
+            let colorTotals = [black,blue,green,red,white]
+
+            //add up how many gold coins that equates to
+            let tokensReq = colorTotals.forEach(total => {
+                let sum = 0;
+                if (total < 0) {
+                    sum = sum - total
+                }
+                return sum
+            });
+
+            //check to see if the ammount of yellow tokens the player has is enough
+            if(this.tokens.Yellow >= sum){
+                return true
+            }
+        }
+        else{return false}
+        
+    }
+    /**
+     * method used to update the player object when it buys a card.
+     * @param {*} cardObject the card that player wants to buy.
+     * @param {*} canBuyCard boolean used to make sure that we can actually buy the card!
+     */
+    buyCard = (cardObject,canBuyCard) => {
+
+        //have error check, if canBuyCard flase, throw error, we shouldn't be here.
+        if (!canBuyCard){
+            throw new Error('You can not buy this card, why did this happen!?');
+        }
+        //do all the math before hand
+        let black = this.tokens.Black - cardObject.black 
+        let blue = this.tokens.Blue - cardObject.blue 
+        let green = this.tokens.Green - cardObject.green
+        let red = this.tokens.Red - cardObject.red
+        let white = this.tokens.White - cardObject.white
+        let colorTotals = [black,blue,green,red,white]
+
+        //rather than trying to use yellow tokens to buy with, see how many we need total
+        //because we already know we can buy the card.
+        let yellowReq = colorTotals.forEach(total => {
+            let sum = 0;
+            if (total < 0) {
+                sum = sum - total
+            }
+            return sum
+        });
+
+        //updates values of the players tokens,
+        this.tokens.Black  = black < 0 ? 0 : black
+        this.tokens.Blue = blue < 0 ? 0 : blue
+        this.tokens.Green = green < 0 ? 0 : green
+        this.tokens.Red = red < 0 ? 0 : red
+        this.tokens.White = white < 0 ? 0 : white
+        this.tokens.Yellow = this.tokens.Yellow - yellowReq
+
+        // the color of the card aquired,
+        this.cards[cardObject.color] += 1
+        
+        //and the pv.
+        this.victoryPoints += cardObject.pv
+    }
 }
+
+// class cardObject {
+//     constructor(color,pv,black,blue,green,red,white){
+//         this.color= color,
+//         this.pv   = pv,
+//         this.black= black,
+//         this.blue = blue,
+//         this.green= green,
+//         this.red  = red,
+//         this.white= white
+//     }
+    
+// };
 const testGame = new Game(shipIt.level1Objects, shipIt.level2Objects, shipIt.level3Objects, shipIt.nobleObjects)
+const testPlayer1 = new Player(William,12345)
+const testPlayer2 = new Player(Callum,23456)
+const testPlayer3 = new Player(Lily,34657)
+const testPlayer4 = new Player(Sara,45678)
 
 
 
