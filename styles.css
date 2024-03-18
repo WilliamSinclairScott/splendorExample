@@ -254,22 +254,23 @@ html, body {
 }
 
 /* place holders, remove as demo is created */
-.cardExample{
-  width: 100%;
-  height: 100%;
-  background-color: green;
-  border: 5px dotted black;
-}
-.resourceExample{
-  width: 100%;
-  height: 100%;
-  background-color: plum;
-  border: 1px dotted black;
-}
 
 .LogBox { grid-area: LogBox;
-  background: grey; height:100%;
+  background: slategrey; 
+  height:100%;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  overflow: auto; /* This will enable scrolling */
+  border: 1px solid #ccc; /* Optional: Add border for better visibility */
+}
+.LogBox p {
+  color: rgb(187, 201, 209);
+  font-size: .7rem;
+  margin: 2px 5px 1px 0;
+  padding: 0 0 0 25%;
+  border-bottom: 2px solid rgb(86, 103, 121);
 }
 
 /* Color pallets for demo */
