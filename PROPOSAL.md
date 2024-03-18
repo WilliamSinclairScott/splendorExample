@@ -1,6 +1,6 @@
-# Project Proposal Example
+# Project Proposal William Scott
 
-## Project Choice (Tell us which project you're doing!)
+## Project Choice
 
 - [ ] Reconstruction of Space Cowboys' Splendor
 
@@ -29,10 +29,6 @@ https://excalidraw.com/#json=68RzJOtr1eUPzFFo-iiQK,IeHK-Y96LWXlnjhPsXv7nA
 - As a player, I would like to play this game online so that I don't have to have my challenger sitting next to me.
 - As a player, I would like to hear an audible sound when I mark a game box so that I know my selection worked.
 - As a player, I would like to have animations of my actions so it is more pleasing to watch the game unfold on not my turn.
-
-#### Notionboard Template
-Notionboard template for building projects ( You can use this for any project )
-https://www.notion.so/GA-Unit-3-Tunr-Lab-da2c82fafd4e4a7aa654676732db9ee3
 
 #### Timeline - Daily Accountability
 

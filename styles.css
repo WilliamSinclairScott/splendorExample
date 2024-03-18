@@ -166,7 +166,8 @@ html, body {
   grid-area: CurrentPlayer;
 }
 
-.PlayerResources {  display: grid;
+.PlayerResources {  
+  display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-auto-columns: 1fr;
@@ -181,7 +182,29 @@ html, body {
     "PlayerRY";
   grid-area: PlayerResources;
 }
-
+.PlayerResources div{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  margin: 2% 2% 2% 2%;
+}
+.PlayerResources div div:last-child{
+  color: white;
+  text-align: center;
+  border: .1rem solid white;
+  border-radius: 50%;
+  width: 100%;
+  height: 75%;
+}
+.PlayerResources div div:first-child{
+  color: white;
+  text-align: center;
+  border: .1rem solid white;
+  border-radius: 10%;
+  width: 70%;
+  height: 75%;
+}
 .PlayerRY { grid-area: PlayerRY; display: flex;}
 
 .PlayerRW { grid-area: PlayerRW; display: flex;}

@@ -3,14 +3,33 @@ Thinking out sudo code logic
 
 Player.actions
     click card ? buyCard : throw(ErrorYou'rePoor)
+        if player.eachtokencolor >= game.thecardinquestioncost
+            add card to player score & board
+            remove card from game board and replace it
+        else
+            prompt player that they can't do that,
+            RE: give this.player.anotherAction
     Click Gold(pile)
+        grey out UI on other tokens, dim everything but Card board
         clickCard ? canReserve : throw(ErrorYouCan't)
+            Check player.reservedCards.length <= 3 ? 
+            Add game.thecardinquestion to player.reservedcards : 
+            prompt player that they can't do that, RE: give this.player.anotherAction
     Click Token
-        clickSameToken
+        check ammount of tokens in that set, redo listeners for just the coins available, grey out cards area.
+        if sameToken Color has 4 tokens, clickSameToken available
+            click it, subtract 2 from game.token[Color]. Add 2 to player.token[Color]
         clickDifToken
-        clickDDifToken
+            regardless of sameToken, highlight OTHER colors.
+            clickDDifToken
+            RE above, this point two colors should be greyed out.
+            click last color, subtract selected colors from game.token[Colors]. Add to player.token[colors]
 
 Player.cleanup
+    Check to see if they have more than 10 tokens, if so, prompt player to choose which tokens to discard.
+    discard one token then RE: Player.cleanup
+
+
 */
 /**
  * 
