@@ -6,7 +6,7 @@ html, body {
 }
 
 .container {  
-  height: 100%; 
+  height: 99%; 
   display: grid;
   grid-template-columns: 1.2fr 1.2fr 1.2fr 1.2fr 0.5fr 0.7fr 1fr;
   grid-template-rows: 1.2fr 1.2fr 1.2fr 0.5fr;
@@ -23,7 +23,7 @@ html, body {
 #Level3Zone {
   grid-area: Level3Zone;
   display: flex;
-  margin: 1%;
+  margin: .5% 0 0 0;
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
@@ -32,7 +32,7 @@ html, body {
 #Level2Zone { 
   grid-area: Level2Zone; 
   display: flex;
-  margin: 10px;
+  margin: .5% 0 0 0;
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
@@ -41,7 +41,7 @@ html, body {
 #Level1Zone { 
   grid-area: Level1Zone; 
   display: flex; 
-  margin: 10px;
+  margin: 5px 0 5px 0;
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
@@ -145,8 +145,10 @@ html, body {
 
 #ResourceY { grid-area: 6 / 1 / 7 / 2; }
 #ResourceY div{
-  color: whitesmoke;
-  background:gold
+  color: black;
+  background: gold;
+  color: black !important;
+  border: 1px solid black  !important;
 }
 
 #ResourceW { grid-area: 5 / 1 / 6 / 2; }
@@ -202,7 +204,7 @@ html, body {
 .OtherPlayers div > div > div {
   flex-basis: calc(15%);
   height: 1rem;
-  border: 1px solid black;
+  border: 2px solid whitesmoke;
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -210,14 +212,16 @@ html, body {
   font-size: .8rem; /* Adjust as needed */
   margin-bottom: 2px;
   font-size: .5rem;
+  color: whitesmoke;
 }
 
 .OtherPlayers div > div > div:nth-last-child(n+7) {
-  border-radius: 20%;
+  border-radius: 25%;
   font-size: .5rem;
+  color: whitesmoke;
 }
 
-/* current player information */
+/* ----------- current player information ---------------------*/
 .CurrentPlayer {  display: grid;
   grid-template-columns: 1fr 1.3fr;
   grid-template-rows: 1fr 1.5fr 0.5fr;
@@ -361,4 +365,6 @@ html, body {
 }
 .colorY{
   background: gold;
+  color: black !important;
+  border: 1px solid black  !important;
 }
