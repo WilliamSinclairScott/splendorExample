@@ -107,11 +107,11 @@ html, body {
   padding-top: 100%;
 }
 
-/* issue with numbers being added */
+/* issue regarding cricle mechanics with numbers being added */
 #resourceG { 
   grid-area: 1 / 1 / 2 / 2;
 }
-#resourceG div{
+#ResourceG div{
   color: whitesmoke;
   background:green
 }
