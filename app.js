@@ -32,6 +32,7 @@ class Game {
     constructor(oneDeck, twoDeck, threeDeck, nobleDeck) {
         this.playerCount = 0;
         this.players = [];
+        this.currentPlayer = 0;
         this.lvlOneDeck = shuffleArray(oneDeck)
         this.lvlTwoDeck = shuffleArray(twoDeck)
         this.lvlThreeDeck = shuffleArray(threeDeck)
@@ -81,6 +82,12 @@ class Game {
         else {
             throw new Error('Invalid Number of Players assigned!');
         }
+    }
+    /**
+     * assigns a random index depending on the amount of players.
+     */
+    chooseStartingPlayer = () => {
+        this.currentPlayer = Math.floor(Math.random() * this.playerCount); 
     }
     /**
      * Adds a player to the Game
@@ -290,9 +297,16 @@ const testPlayer3 = new Player(`Lily`,34657)
 const testPlayer4 = new Player(`Sara`,45678)
 
 initateGame(testGame)
+testGame.chooseStartingPlayer()
+console.log(testGame.currentPlayer)
 
 
 //------------------------functions below----------------------------------------
+
+/**
+ * Initializes the gamestate
+ * @param {*} gameObject 
+ */
 function initateGame(gameObject) {
     //There should be a prompt for asking how many players.
         //NAMESPACE for said action
@@ -331,8 +345,9 @@ function initateGame(gameObject) {
     }
     updateResourceNumbers(startingResources)
 }
+
 /**
- * 
+ * Used in initateGame to add the noble cards to the board
  * @param {*} nobleInstance 
  */
 function createNobleCardAddToNobleZone(nobleInstance) {
@@ -375,7 +390,7 @@ function createNobleCardAddToNobleZone(nobleInstance) {
 /**
  * format input such that:
  * const newNumbers = {
-    "resourceG": X,
+    "ResourceG": X,
     "ResourceR": X,
     "ResourceU": X,
     "ResourceB": X,
@@ -451,3 +466,4 @@ function shuffleArray(array) {
 
     return array;
 }
+
