@@ -1,44 +1,23 @@
-/*
-Thinking out sudo code logic
-
-Player.actions
-    click card ? buyCard : throw(ErrorYou'rePoor)
-        if player.eachtokencolor >= game.thecardinquestioncost
-            add card to player score & board
-            remove card from game board and replace it
-        else
-            prompt player that they can't do that,
-            RE: give this.player.anotherAction
-    Click Gold(pile)
-        grey out UI on other tokens, dim everything but Card board
-        clickCard ? canReserve : throw(ErrorYouCan't)
-            Check player.reservedCards.length <= 3 ? 
-            Add game.thecardinquestion to player.reservedcards : 
-            prompt player that they can't do that, RE: give this.player.anotherAction
-    Click Token
-        check ammount of tokens in that set, redo listeners for just the coins available, grey out cards area.
-        if sameToken Color has 4 tokens, clickSameToken available
-            click it, subtract 2 from game.token[Color]. Add 2 to player.token[Color]
-        clickDifToken
-            regardless of sameToken, highlight OTHER colors.
-            clickDDifToken
-            RE above, this point two colors should be greyed out.
-            click last color, subtract selected colors from game.token[Colors]. Add to player.token[colors]
-
-Player.cleanup
-    Check to see if they have more than 10 tokens, if so, prompt player to choose which tokens to discard.
-    discard one token then RE: Player.cleanup
-
-
-*/
 /**
  * 
  * Importing all my data from another file for ease on scaling later.
  * 
- * 
  */
 import shipIt from "./csv";
 
+
+// Global Variables
+const colorToClass = {
+    green : 'colorG',
+    blue : 'colorU',
+    red : 'colorR',
+    white : 'colorW',
+    black : 'colorB'
+}
+
+
+
+//
 class Game {
     /**
      * Each array is a deck of Deck Objects predefined in the database
@@ -148,6 +127,7 @@ class Player {
             Black: 0
         }
         this.victoryPoints = 0
+        this.color = ''
     }
     /**
      * method used to check if the player needs to discard tokens
@@ -206,6 +186,7 @@ class Player {
     }
     /**
      * method used to update the player object when it buys a card.
+     * HAVE TO CALL `removeCard` AND `Game.dealNewCardlevel`!
      * @param {*} cardObject the card that player wants to buy.
      * @param {*} canBuyCard boolean used to make sure that we can actually buy the card!
      */
@@ -248,7 +229,34 @@ class Player {
         this.victoryPoints += cardObject.pv
     }
 }
+/*
+Thinking out sudo code logic
 
+Player.actions
+    Click Gold(pile)
+        grey out UI on other tokens, dim everything but Card board
+        clickCard ? canReserve : throw(ErrorYouCan't)
+            Check player.reservedCards.length <= 3 ? 
+            Add game.thecardinquestion to player.reservedcards : 
+            prompt player that they can't do that, RE: give this.player.anotherAction
+    Click Token
+        check ammount of tokens in that set, redo listeners for just the coins available, grey out cards area.
+        if sameToken Color has 4 tokens, clickSameToken available
+            click it, subtract 2 from game.token[Color]. Add 2 to player.token[Color]
+        clickDifToken
+            regardless of sameToken, highlight OTHER colors.
+            clickDDifToken
+            RE above, this point two colors should be greyed out.
+            click last color, subtract selected colors from game.token[Colors]. Add to player.token[colors]
+
+Player.cleanup
+    Check to see if they have more than 10 tokens, if so, prompt player to choose which tokens to discard.
+         discard one token then RE: Player.cleanup
+    Check to see if they have enough cards to gain any available nobles
+    Check to see if they have initiated the END GAME
+   
+
+*/
 // class cardObject {
 //     constructor(color,pv,black,blue,green,red,white){
 //         this.color= color,
@@ -261,20 +269,92 @@ class Player {
 //     }
     
 // };
+//-------------------------------------Classes Above -----------------------------------------------
+
+
 const testGame = new Game(shipIt.level1Objects, shipIt.level2Objects, shipIt.level3Objects, shipIt.nobleObjects)
 const testPlayer1 = new Player(William,12345)
 const testPlayer2 = new Player(Callum,23456)
 const testPlayer3 = new Player(Lily,34657)
 const testPlayer4 = new Player(Sara,45678)
 
-
+const cardAreaZone3 = document.getElementById('Level3Zone')
+const cardAreaZone2 = document.getElementById('Level2Zone')
+const cardAreaZone1 = document.getElementById('Level2Zone')
+const nobleArea = document.getElementById('NobleZone')
 
 
 //------------------------functions below----------------------------------------
+function initateGame(gameObject) {
+    //There should be a prompt for asking how many players.
+        //NAMESPACE for said action
+    
+    //Demo material we gonna make 4 players play demo
+    testGame.addPlayer(testPlayer1)
+    testGame.addPlayer(testPlayer2)
+    testGame.addPlayer(testPlayer3)
+    testGame.addPlayer(testPlayer4)
+
+    testGame.setPlayerCountInit()
+    
+    //create new lvl1 cards
+    createNewCardElement(testGame.dealNewCardlevel(1))
+    createNewCardElement(testGame.dealNewCardlevel(1))
+    createNewCardElement(testGame.dealNewCardlevel(1))
+
+    //create new lvl2 cards
+    createNewCardElement(testGame.dealNewCardlevel(2))
+    createNewCardElement(testGame.dealNewCardlevel(2))
+    createNewCardElement(testGame.dealNewCardlevel(2))
+
+    //create new lvl3 cards
+    createNewCardElement(testGame.dealNewCardlevel(3))
+    createNewCardElement(testGame.dealNewCardlevel(3))
+    createNewCardElement(testGame.dealNewCardlevel(3))
+
+    //initialize global tokens
+    
+}
+
+/**
+ * Used to create a new div to display using the cardObject
+ * @param {*} cardObject 
+ * @returns a DOM of the new div element
+ */
+function createNewCardElement(cardObject) {
+    // Create a new div element
+    let cardContainer = document.createElement("div");
+    cardContainer.classList.add("cardContainer", colorToClass[cardObject.color]);
+
+    // Create and append victory point value element
+    let victorypointValue = document.createElement("div");
+    victorypointValue.classList.add("victorypointValue");
+    victorypointValue.textContent = `${cardObject.pv}`;
+    cardContainer.appendChild(victorypointValue);
+
+    // Create and append cost of card element
+    let costOfCard = document.createElement("div");
+    costOfCard.classList.add("costOfCard");
+
+    // Create and append cost elements
+    for (let key in obj) {
+        if (key !== "color" && key !== "pv" && obj[key] !== 0) {
+            let costElement = document.createElement("div");
+            costElement.classList.add("costElement", colorToClass[key]);
+            costElement.textContent = `${obj[key]}`;
+            costOfCard.appendChild(costElementU);
+        }
+      }
+    // Put them all together
+    cardContainer.appendChild(costOfCard);
+
+    return cardContainer
+}
 /**
  * Shuffles an array using Fisher Yates Shuffle 
  * https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
- * @param {Array} array 
+ * @param {Array} array
+ * @returns {Array} shuffled
  */
 function shuffleArray(array) {
     let currentIndex = array.length, randomIndex;

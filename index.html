@@ -12,7 +12,7 @@
   <div class="container">
 
     <!-- Where the cards go -->
-    <div class="Level3Zone">
+    <div id="Level3Zone">
       <div class="cardContainer colorG">
         <div class="victorypointValue">4</div>
         <div class="costOfCard">
@@ -38,7 +38,7 @@
         </div>
       </div>
     </div>
-    <div class="Level2Zone">
+    <div id="Level2Zone">
       <div class="cardContainer colorU">
         <div class="victorypointValue">4</div>
         <div class="costOfCard">
@@ -64,7 +64,7 @@
         </div>
       </div>
     </div>
-    <div class="Level1Zone">
+    <div id="Level1Zone">
       <div class="cardContainer colorB">
         <div class="victorypointValue">4</div>
         <div class="costOfCard">
@@ -93,28 +93,28 @@
 
     <!-- global resources -->
     <div class="Resources">
-      <div class="resourceG">
-        <div class="colorG"></div>
+      <div id="resourceG">
+        <div>5</div>
       </div>
-      <div class="ResourceR">
-        <div class="colorR"></div>
+      <div id="ResourceR">
+        <div>4</div>
       </div>
-      <div class="ResourceU">
-        <div class="colorU"></div>
+      <div id="ResourceU">
+        <div>5</div>
       </div>
-      <div class="ResourceB">
-        <div class="colorB"></div>
+      <div id="ResourceB">
+        <div></div>
       </div>
-      <div class="ResourceW">
-        <div class="colorW"></div>
+      <div id="ResourceW">
+        <div></div>
       </div>
-      <div class="ResourceY">
-        <div class="colorY"></div>
+      <div id="ResourceY">
+        <div></div>
       </div>
     </div>
 
     <!-- Nobles Go here -->
-    <div class="NobleZone">
+    <div id="NobleZone">
       <div class="nobleCardContainer">
         <div class="nobleRequire colorR">3</div>
         <div class="nobleRequire colorG">3</div>
@@ -140,7 +140,9 @@
     </div>
 
     <!-- Other player Queue -->
-    <div class="OtherPlayers"></div>
+    <div class="OtherPlayers">
+      <!-- This will work later -->
+    </div>
 
     <!-- Current Player Information -->
     <div class="CurrentPlayer">
@@ -176,10 +178,14 @@
       </div>
 
       <!-- Reserved Card location -->
-      <div class="ReservedCards"></div>
+      <div class="ReservedCards">
+        <!-- Probably going to be something similar to a zone flexbox... -->
+      </div>
 
       <!-- Victory Point Tracker -->
       <div class="VParea">
+        <!-- Might also use area for hidden buttons and change the buttons based on what
+        the player's current action ect is. -->
         <button>How Many points</button>
       </div>
     </div>

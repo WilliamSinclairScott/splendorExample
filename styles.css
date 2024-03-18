@@ -20,7 +20,7 @@ html, body {
 }
 
 /* card zones and child objects */
-.Level3Zone {
+#Level3Zone {
   grid-area: Level3Zone;
   display: flex;
   margin: 10px;
@@ -29,7 +29,7 @@ html, body {
   justify-content: space-evenly;
 }
 
-.Level2Zone { 
+#Level2Zone { 
   grid-area: Level2Zone; 
   display: flex;
   margin: 10px;
@@ -38,7 +38,7 @@ html, body {
   justify-content: space-evenly;
 }
 
-.Level1Zone { 
+#Level1Zone { 
   grid-area: Level1Zone; 
   display: flex; 
   margin: 10px;
@@ -107,20 +107,44 @@ html, body {
   padding-top: 100%;
 }
 
-.resourceG { grid-area: 1 / 1 / 2 / 2; }
-
-.ResourceR { grid-area: 3 / 1 / 4 / 2; }
-
-.ResourceU { grid-area: 2 / 1 / 3 / 2; }
-
-.ResourceB { grid-area: 4 / 1 / 5 / 2; }
-
-.ResourceW { grid-area: 5 / 1 / 6 / 2; }
-
-.ResourceY { grid-area: 6 / 1 / 7 / 2; }
+/* issue with numbers being added */
+#resourceG { 
+  grid-area: 1 / 1 / 2 / 2;
+}
+#resourceG div{
+  color: whitesmoke;
+  background:green
+}
+#ResourceR { grid-area: 3 / 1 / 4 / 2; }
+#ResourceR div{
+  color: whitesmoke;
+  background:red
+}
+#ResourceU { grid-area: 2 / 1 / 3 / 2; }
+#ResourceU div{
+  color: whitesmoke;
+  background:blue
+}
+#ResourceB { grid-area: 4 / 1 / 5 / 2; }
+#ResourceB div{
+  color: whitesmoke;
+  background:black
+}
+#ResourceY { grid-area: 6 / 1 / 7 / 2; }
+#ResourceY div{
+  color: whitesmoke;
+  background:gold
+}
+#ResourceW { grid-area: 5 / 1 / 6 / 2; }
+#ResourceW div{
+  color: black;
+  background: whitesmoke;
+  color: black !important;
+  border: 1px solid black  !important;
+}
 
 /* Noble Card area */
-.NobleZone {
+#NobleZone {
   grid-area: NobleZone;  
   display: flex;
   flex-direction: row;
