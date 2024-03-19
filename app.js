@@ -142,23 +142,35 @@ class Game {
         }
 
         for (let i = 0; i < children.length; i++) {
-            children[i].addEventListener('click', queryToBuy(this.cardsOutOnTable[key][i],i));
-        }
+            children[i].addEventListener('click', function() {
+                if(this.queryToBuy(this.cardsOutOnTable[key][i])){
+                    areaInQuestion.removeChild(this);
+                    console.log(`Removed child`);
+                }
+            });
+        }   
 
         /*queryToBuy(cardInQuestion,location of card)
             this.currentplayer.canbuy?
                 yes buy
-                    buy removes
+                    buy removes in array
+        */
     }
     /**
      * Asks if player1 (current player) can buy the input card
      * @param {*} cardInQuestion 
      * @param {*} locationOfCard 
      */
-    queryPlayerToBuy = (cardInQuestion,locationOfCard) => {
-        if (this.players[0].canBuyCard(cardInQuestion)) {this.players[0].buyCard(
-            cardInQuestion,this.players[0].canBuyCard(cardInQuestion))}
-        else {logToScreen(`<p> You can not buy that card at this time!`)}
+    queryPlayerToBuy = (cardInQuestion) => {
+        if (this.players[0].canBuyCard(cardInQuestion)) {
+            this.players[0].buyCard(cardInQuestion,this.players[0].canBuyCard(cardInQuestion))
+            return true
+        }
+
+        else {
+            logToScreen(`<p> You can not buy that card at this time!`)
+            return false
+        }
     }
     /**
      * Initializes the gamestate
@@ -318,7 +330,7 @@ class Player {
      * @param {*} cardObject the card that player wants to buy.
      * @param {*} canBuyCard boolean used to make sure that we can actually buy the card!
      */
-    buyCard = (cardObject,canBuyCard) => {
+    buyCard = (cardObject,canBuyCard,childInQuestion) => {
 
         //have error check, if canBuyCard flase, throw error, we shouldn't be here.
         if (!canBuyCard){
@@ -357,7 +369,7 @@ class Player {
         this.victoryPoints += cardObject.pv
 
         //now remove the card
-        const removedChildIndex = Array.from(children).indexOf(this);
+        const removedChildIndex = Array.from(childInQuestion).indexOf(this);
         areaInQuestion.removeChild(this);
         console.log(`Removed child at index: ${removedChildIndex}`);
 
