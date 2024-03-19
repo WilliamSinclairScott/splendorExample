@@ -22,7 +22,14 @@ const otherPlayers = document.getElementById('OtherPlayers')
 const nobleArea = document.getElementById('NobleZone')
 const currentPlayerArea = document.getElementById('CurrentPlayer')
 const logArea = document.getElementById('LogBox')
-
+const globalResourcePool = {
+    'Green' : ResourceG,
+    'Red' : ResourceR,
+    'Blue' : ResourceU,
+    'Black' : ResourceB,
+    'White' : ResourceW,
+    'Yellow' : ResourceY,
+}
 //
 class Game {
     /**
@@ -101,6 +108,27 @@ class Game {
         this.players.push(playerObject)
         this.playerCount += 1
     }
+
+    goToNextPlayer = () => {
+        this.players.push(this.players.shift());
+        //clear otherPlayers Area
+        removeAllChildren(otherPlayers)
+        //clear out currPlayer
+        removeAllChildren(currentPlayerArea)
+        //initialize Player one.
+        let player1Details = generatePlayerDetails(this.players[0])
+        otherPlayers.insertAdjacentHTML('beforeend',player1Details.nameTag)
+        currentPlayerArea.appendChild(player1Details.resources)
+        //skipping element 0 as that player will fill the current player field.
+        for (let index = 1; index < this.players.length; index++) {
+            // console.log(this.players[index])
+            let html = generateOtherPlayerDetails(this.players[index])
+            otherPlayers.insertAdjacentHTML('beforeend',html)
+        }
+        let p = `<p>It is ${this.players[0].name}'s turn.</p>`
+        logToScreen(p)
+
+    }
     /**
      * @param {number} number 1,2,3
      * @returns nextCardObject In Array
@@ -130,26 +158,58 @@ class Game {
     }
     
     /**
-     * 
+     * Creates the "Buy card" Logic listener at each card. Recursive nature reassigns listener to new object when made
      * @param {*} areaInQuestion 
+     * !NEED TO ADD NOBLE CHECK LOGIC
      */
-    createClickListenersForResourceCards = (areaInQuestion) => {
-        const children = areaInQuestion.children;
-        let num = 0
+    createClickListenersForResourceCards = () => {  
+        let areaInQuestion;     
+        for (let k = 1; k < 4; k++) {
+            // Determine areaInQuestion based on 'loop'
+            if (3 === k) areaInQuestion = cardAreaZone3;
+            else if (2 === k) areaInQuestion = cardAreaZone2;
+            else if (1 === k) areaInQuestion = cardAreaZone1;
+            
+            const children = areaInQuestion.children;
+            
+            
+                
+            // Create a recursive event listener function
+            const recursiveAddEventListener = () => {
+                return () => { 
+                    // Returning a function to be used as an event listener
+                    // Always check if the card is available for purchase
+                    if (this.queryPlayerToBuy(this.cardsOutOnTable[k][2])) {
+                        // Remove the clicked card
+                        areaInQuestion.removeChild(this);
+                        // Remove the card from the 'this.cardsOutOnTable' array
+                        this.cardsOutOnTable[k].splice(2, 1); // Assuming you always remove the last card
+                        console.log(`Removed card`);
+                        
+                        // Replace the removed card with a new one and append a new event listener
+                        areaInQuestion.appendChild(createNewCardElement(this.dealNewCardlevel(k)));
+                        const newCard = areaInQuestion.lastElementChild; // Get the newly added card
+                        newCard.addEventListener('click', recursiveAddEventListener()); // Add event listener to the new card
+                        
+                        // !Check Noble conditions or proceed to the next player
+                        this.goToNextPlayer();
+                    }
+                };
+            };
+        
+            // Add event listeners to all children
+            for (let i = 0; i < children.length; i++) {
+                children[i].addEventListener('click', recursiveAddEventListener());
+            }
+        }
+    }
+    createClickListenersForGlobalResources = () => {
+        Object.key.forEach(color => {
+            let resourceTokenColor = document.getElementById(color);
+            resourceTokenColor.addEventListener('click',() => {
 
-        if(areaInQuestion === cardAreaZone3) num = 3
-        else if(areaInQuestion === cardAreaZone2) num = 2
-        else if(areaInQuestion === cardAreaZone1) num = 1
-
-        for (let i = 0; i < children.length; i++) {
-            children[i].addEventListener('click', () => {
-                if(this.queryPlayerToBuy(this.cardsOutOnTable[num][i])){
-                    areaInQuestion.removeChild(this);
-                    this.cardsOutOnTable[key].splice(i,1)
-                    console.log(`Removed card`);
-                }
-            });
-        }   
+            })
+        });
     }
     /**
      * Asks if player1 (current player) can buy the input card
@@ -165,16 +225,14 @@ class Game {
         }
 
         else {
-            let noGo = `<p> You can not buy that card at this time!`
-            if(logArea.lastElementChild === noGo)
-                logToScreen(`<p>You Either Keep Clicking, or Something's the matter</P>`)
-            else{logToScreen(noGo)}
+            let noGo = `<p> You can not buy that card at this time!</p><p> It is still ${this.players[0].name}'s turn`
+            logToScreen(noGo)
             return false
         }
     }
     /**
      * Initializes the gamestate
-     * NEEDS WORK
+     * !NEEDS WORK
      */
     initateGame = () => {
         //There should be a prompt for asking how many players.
@@ -235,14 +293,10 @@ class Game {
             let html = generateOtherPlayerDetails(this.players[index])
             otherPlayers.insertAdjacentHTML('beforeend',html)
         }
-        
+
         //create listeners for the cards. 
-        this.createClickListenersForResourceCards(cardAreaZone3)
-        this.createClickListenersForResourceCards(cardAreaZone2)
-        this.createClickListenersForResourceCards(cardAreaZone1)
-
-
-
+        this.createClickListenersForResourceCards()
+        
     }
 }
 
@@ -334,6 +388,7 @@ class Player {
     /**
      * method used to update the player object when it buys a card.
      * HAVE TO CALL `removeCard` AND `Game.dealNewCardlevel`!
+     * !I need to make it so that the tokens removed from the player return to the pool of global
      * @param {*} cardObject the card that player wants to buy.
      * @param {*} canBuyCard boolean used to make sure that we can actually buy the card!
      */
@@ -414,24 +469,6 @@ Player.cleanup
    
 
 */
-// class cardObject {
-//     constructor(color,pv,black,blue,green,red,white){
-//         this.color= color,
-//         this.PV   = pv,
-//         this.Black= black,
-//         this.Blue = blue,
-//         this.Green= green,
-//         this.Red  = red,
-//         this.White= white
-//     }
-    
-// };
-//-------------------------------------Classes Above -----------------------------------------------
-
-// console.log(level1Objects);
-// console.log(level2Objects);
-// console.log(level3Objects);
-// console.log(nobleObjects);
 
 /* --------------------------------------Actual Code Begins ------------------------------------------------------- */
 
@@ -443,15 +480,19 @@ const testPlayer4 = new Player(`Sara`,45678)
 const testGame = new Game(level1Objects,level2Objects, level3Objects, nobleObjects,
     testPlayer1,testPlayer2,testPlayer3,testPlayer4)
 
-// console.log(testGame)
-// console.log(Game);
-
 testGame.initateGame(testGame,testPlayer1,testPlayer2,testPlayer3,testPlayer4)
-
 
 //------------------------functions below----------------------------------------
 
-
+function removeAllChildren(parent) {
+    if (parent) {
+        while (parent.firstChild) {
+            parent.removeChild(parent.firstChild);
+        }
+    } else {
+        console.error(`Parent element not found`);
+    }
+}
 /**
  * Used in other functions and methods to log the details to the logbox area
  * should always make dynamic text as a variable before calling function.
@@ -459,6 +500,7 @@ testGame.initateGame(testGame,testPlayer1,testPlayer2,testPlayer3,testPlayer4)
  */
 function logToScreen(pHTML){
     logArea.insertAdjacentHTML('beforeend', pHTML)
+    logArea.scrollTop = logArea.scrollHeight;
 }
 /**
  * reminder if there is a problem with tokens and card count.
