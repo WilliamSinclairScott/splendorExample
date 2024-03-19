@@ -20,6 +20,7 @@ const cardAreaZone2 = document.getElementById('Level2Zone')
 const cardAreaZone1 = document.getElementById('Level1Zone')
 const otherPlayers = document.getElementById('OtherPlayers')
 const nobleArea = document.getElementById('NobleZone')
+const currentPlayerArea = document.getElementById('CurrentPlayer')
 
 //
 class Game {
@@ -88,7 +89,7 @@ class Game {
      * assigns a random index depending on the amount of players.
      */
     chooseStartingPlayer = () => {
-        this.currentPlayer = Math.floor(Math.random() * this.playerCount); 
+        this.currentPlayer = Math.floor(Math.random() * this.playerCount);
     }
     /**
      * Adds a player to the Game
@@ -155,23 +156,39 @@ initateGame = () => {
     updateResourceNumbers(startingResources)
 
     //Randomly choose starting player and then from there, set them to index0 in the players array.
-    this.chooseStartingPlayer()
-    console.log(this.currentPlayer)
-    let playerThatIWant = this.players[this.currentPlayer].name;
-    console.log(playerThatIWant)
-    while(playerThatIWant == this.players[0].name){
-        this.players.push(this.players.shift());
+    // Randomly choose starting player index
+    this.chooseStartingPlayer();
+    // console.log("Starting player index:", this.currentPlayer);
+    // console.log("Starting player:", this.players[this.currentPlayer].name);
+
+    // Rotate the player array so that the starting player is at index 0
+    if (this.currentPlayer !== 0) {
+        // Determine the number of rotations needed to bring the starting player to index 0
+        const rotations = this.currentPlayer;
+        
+        // Rotate the array
+        for (let i = 0; i < rotations; i++) {
+            this.players.push(this.players.shift());
+        }
     }
 
-    //initialize Player one.
-        //  NOT DONE
+    // Ensure the starting player is indeed at index 0
+    // console.log("After rotation, player at index 0:", this.players[0].name);
 
+    // Ensure the starting player is indeed at index 0
+    // console.log("After rotation, player at index 0:", this.players[0].name);
+        
+    //initialize Player one.
+    let player1Details = generatePlayerDetails(this.players[0])
+    otherPlayers.insertAdjacentHTML('beforeend',player1Details.nameTag)
+    currentPlayerArea.appendChild(player1Details.resources)
     //skipping element 0 as that player will fill the current player field.
     for (let index = 1; index < this.players.length; index++) {
-        console.log(this.players[index])
+        // console.log(this.players[index])
         let html = generateOtherPlayerDetails(this.players[index])
         otherPlayers.insertAdjacentHTML('beforeend',html)
     }
+
 }
 }
 
@@ -203,6 +220,7 @@ class Player {
      * method used to check if the player needs to discard tokens
      * @returns boolean if player has > 10 tokens
      */
+    //NEED TO ADD LOGIC FOR CARDS
     hasTooManyTokens = () => {
         total = (this.tokens.Green + this.tokens.Blue + this.tokens.Red + 
                 this.tokens.White + this.tokens.Black + this.tokens.Yellow)
@@ -216,6 +234,7 @@ class Player {
      * @param {*} cardObject the card that you want to check if it can be bought
      * @returns boolean if player can buy the card
      */
+    //NEED TO ADD LOGIC FOR CARDS
     canBuyCard = (cardObject) => {
         // without the gold token (yellow)
         if (
@@ -344,6 +363,9 @@ Player.cleanup
 // console.log(level2Objects);
 // console.log(level3Objects);
 // console.log(nobleObjects);
+
+/* --------------------------------------Actual Code Begins ------------------------------------------------------- */
+
 const testPlayer1 = new Player(`William`,12345)
 const testPlayer2 = new Player(`Callum`,23456)
 const testPlayer3 = new Player(`Lily`,34657)
@@ -359,7 +381,60 @@ testGame.initateGame(testGame,testPlayer1,testPlayer2,testPlayer3,testPlayer4)
 
 
 //------------------------functions below----------------------------------------
+/**
+ * reminder if there is a problem with tokens and card count.
+ * Also Might add reserved cards and VP logic here
+ * @param {*} player player 1 details
+ * @returns object containing the nametag used in the OtherPlayer area, and the div for the Player Area resources
+ * 
+ */
+function generatePlayerDetails(player) {
+    //make tag for player 1
+    let nameTag = `<span id="player${player.id}">${player.name}(${player.victoryPoints} VP)</span>`
+    // Create the div element for player resources
+    const playerResourcesDiv = document.createElement('div');
+    playerResourcesDiv.className = 'PlayerResources';
 
+    // Define resource types and their corresponding colors
+    const resourceColors = {
+        'Green': 'colorG',
+        'Blue': 'colorU',
+        'Red': 'colorR',
+        'Black': 'colorB',
+        'White': 'colorW',
+    };
+
+    // Loop through each resource type and create the corresponding divs
+    for (let resourceType in player.tokens) {
+        if (player.tokens.hasOwnProperty(resourceType) && resourceType !== 'Yellow') {
+            const resourceTypeDiv = document.createElement('div');
+            resourceTypeDiv.className = `PlayerR${resourceType}`;
+
+            for (let i = 0; i < 2; i++) {
+                const colorDiv = document.createElement('div');
+                console.log(player.tokens[resourceType])
+                colorDiv.className = resourceColors[resourceType];
+                //reminder if there is a problem with tokens and card count. 
+                colorDiv.textContent = i ? player.tokens[resourceType] : player.cards[resourceType];
+                resourceTypeDiv.appendChild(colorDiv);
+            }
+
+            playerResourcesDiv.appendChild(resourceTypeDiv);
+        }
+    }
+
+    // Create a special div for Yellow resource type
+    const yellowResourceDiv = document.createElement('div');
+    yellowResourceDiv.className = 'PlayerRY';
+    const yellowColorDiv = document.createElement('div');
+    yellowColorDiv.id = 'currplayerYnum';
+    yellowColorDiv.className = 'colorY';
+    yellowColorDiv.textContent = player.tokens.Yellow; // Fill in actual Yellow resource count
+    yellowResourceDiv.appendChild(yellowColorDiv);
+    playerResourcesDiv.appendChild(yellowResourceDiv);
+
+    return {nameTag : nameTag, resources : playerResourcesDiv };
+}
 /**
  * 
  * @param {*} player the player that needs to be added to OtherPlayers

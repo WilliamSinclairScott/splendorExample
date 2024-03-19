@@ -222,7 +222,7 @@ html, body {
 }
 
 /* ----------- current player information ---------------------*/
-.CurrentPlayer {  display: grid;
+#CurrentPlayer {  display: grid;
   grid-template-columns: 1fr 1.3fr;
   grid-template-rows: 1fr 1.5fr 0.5fr;
   gap: 0px 0px;
