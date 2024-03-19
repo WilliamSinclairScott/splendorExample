@@ -327,7 +327,7 @@ html, body {
   height: 2rem;
 }
 
-.LogBox { grid-area: LogBox;
+#LogBox { grid-area: LogBox;
   background: slategrey; 
   height:100%;
   width: 100%;
@@ -337,7 +337,7 @@ html, body {
   overflow: auto; /* This will enable scrolling */
   border: 1px solid #ccc; /* Optional: Add border for better visibility */
 }
-.LogBox p {
+#LogBox p {
   color: rgb(187, 201, 209);
   font-size: .7rem;
   margin: 2px 5px 1px 0;

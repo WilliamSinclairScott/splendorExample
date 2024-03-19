@@ -21,6 +21,7 @@ const cardAreaZone1 = document.getElementById('Level1Zone')
 const otherPlayers = document.getElementById('OtherPlayers')
 const nobleArea = document.getElementById('NobleZone')
 const currentPlayerArea = document.getElementById('CurrentPlayer')
+const logArea = document.getElementById('LogBox')
 
 //
 class Game {
@@ -48,6 +49,7 @@ class Game {
             Black: 7,
             Yellow: 5
         }
+        this.cardsOutOnTable = [[],[],[],[]] //where 0 = is noble cards and 1-3 are lvls for the cards.
     }
     /**
      * Initializes available tokens for the game based on the number of players
@@ -105,64 +107,102 @@ class Game {
      */
     dealNewCardlevel = (number) => {
         if(number === 1){
-            return this.lvlOneDeck.pop()
+            let card = this.lvlOneDeck.pop()
+            this.cardsOutOnTable[number].push(card)
+            return card
         }else if(number === 2){
-            return this.lvlTwoDeck.pop()
+            let card = this.lvlTwoDeck.pop()
+            this.cardsOutOnTable[number].push(card)
+            return card
         }else if(number === 3){
-            return this.lvlThreeDeck.pop()
+            let card = this.lvlThreeDeck.pop()
+            this.cardsOutOnTable[number].push(card)
+            return card
         }
         else{
             throw new Error('Invalid level of card!');
         }
     }
     dealNewNobleCard = () => {
-        return this.nobleDeck.pop()
+        let card = this.nobleDeck.pop()
+        this.cardsOutOnTable[0].push(card)
+        return card
+    }
+    
+    /**
+     * 
+     * @param {*} areaInQuestion 
+     */
+    createClickListenersForResourceCards = (areaInQuestion) => {
+        const children = areaInQuestion.children;
+        const key = {
+            cardAreaZone3 : 3,
+            cardAreaZone2 : 2,
+            cardAreaZone1 : 1
+        }
+
+        for (let i = 0; i < children.length; i++) {
+            children[i].addEventListener('click', queryToBuy(this.cardsOutOnTable[key][i],i));
+        }
+
+        /*queryToBuy(cardInQuestion,location of card)
+            this.currentplayer.canbuy?
+                yes buy
+                    buy removes
     }
     /**
- * Initializes the gamestate
- * 
- */
-initateGame = () => {
-    //There should be a prompt for asking how many players.
-
-    this.setPlayerCountInit()
-    
-    //create new lvl1 cards
-    cardAreaZone1.appendChild(createNewCardElement(this.dealNewCardlevel(1)))
-    cardAreaZone1.appendChild(createNewCardElement(this.dealNewCardlevel(1)))
-    cardAreaZone1.appendChild(createNewCardElement(this.dealNewCardlevel(1)))
-    //create new lvl2 cards
-    cardAreaZone2.appendChild(createNewCardElement(this.dealNewCardlevel(2)))
-    cardAreaZone2.appendChild(createNewCardElement(this.dealNewCardlevel(2)))
-    cardAreaZone2.appendChild(createNewCardElement(this.dealNewCardlevel(2)))
-    //create new lvl3 cards
-    cardAreaZone3.appendChild(createNewCardElement(this.dealNewCardlevel(3)))
-    cardAreaZone3.appendChild(createNewCardElement(this.dealNewCardlevel(3)))
-    cardAreaZone3.appendChild(createNewCardElement(this.dealNewCardlevel(3)))
-    //Draw noble tokens
-    for(let i = 0; i <= this.playerCount; i++){
-        createNobleCardAddToNobleZone(this.dealNewNobleCard())
+     * Asks if player1 (current player) can buy the input card
+     * @param {*} cardInQuestion 
+     * @param {*} locationOfCard 
+     */
+    queryPlayerToBuy = (cardInQuestion,locationOfCard) => {
+        if (this.players[0].canBuyCard(cardInQuestion)) {this.players[0].buyCard(
+            cardInQuestion,this.players[0].canBuyCard(cardInQuestion))}
+        else {logToScreen(`<p> You can not buy that card at this time!`)}
     }
-    //Initialize global tokens
-    const startingResources = {
-        "ResourceG": this.tokens.Green,
-        "ResourceR": this.tokens.Red,
-        "ResourceU": this.tokens.Blue,
-        "ResourceB": this.tokens.Black,
-        "ResourceW": this.tokens.White,
-        "ResourceY": this.tokens.Yellow
-    }
+    /**
+     * Initializes the gamestate
+     * NEEDS WORK
+     */
+    initateGame = () => {
+        //There should be a prompt for asking how many players.
 
-    updateResourceNumbers(startingResources)
+        this.setPlayerCountInit()
+        
+        //create new lvl1 cards
+        cardAreaZone1.appendChild(createNewCardElement(this.dealNewCardlevel(1)))
+        cardAreaZone1.appendChild(createNewCardElement(this.dealNewCardlevel(1)))
+        cardAreaZone1.appendChild(createNewCardElement(this.dealNewCardlevel(1)))
+        //create new lvl2 cards
+        cardAreaZone2.appendChild(createNewCardElement(this.dealNewCardlevel(2)))
+        cardAreaZone2.appendChild(createNewCardElement(this.dealNewCardlevel(2)))
+        cardAreaZone2.appendChild(createNewCardElement(this.dealNewCardlevel(2)))
+        //create new lvl3 cards
+        cardAreaZone3.appendChild(createNewCardElement(this.dealNewCardlevel(3)))
+        cardAreaZone3.appendChild(createNewCardElement(this.dealNewCardlevel(3)))
+        cardAreaZone3.appendChild(createNewCardElement(this.dealNewCardlevel(3)))
+        
+        //Draw noble tokens
+        for(let i = 0; i <= this.playerCount; i++){
+            createNobleCardAddToNobleZone(this.dealNewNobleCard())
+        }
+        let p = `<p>Cards are placed!</p>`
+        logToScreen(p)
+        //Initialize global tokens
+        const startingResources = {
+            "ResourceG": this.tokens.Green,
+            "ResourceR": this.tokens.Red,
+            "ResourceU": this.tokens.Blue,
+            "ResourceB": this.tokens.Black,
+            "ResourceW": this.tokens.White,
+            "ResourceY": this.tokens.Yellow
+        }
 
-    //Randomly choose starting player and then from there, set them to index0 in the players array.
-    // Randomly choose starting player index
-    this.chooseStartingPlayer();
-    // console.log("Starting player index:", this.currentPlayer);
-    // console.log("Starting player:", this.players[this.currentPlayer].name);
+        updateResourceNumbers(startingResources)
 
-    // Rotate the player array so that the starting player is at index 0
-    if (this.currentPlayer !== 0) {
+        //Randomly choose starting player and then from there, set them to index0 in the players array.
+        this.chooseStartingPlayer();
+
         // Determine the number of rotations needed to bring the starting player to index 0
         const rotations = this.currentPlayer;
         
@@ -170,26 +210,25 @@ initateGame = () => {
         for (let i = 0; i < rotations; i++) {
             this.players.push(this.players.shift());
         }
+        p = `<p>Player ${this.players[0].name} is going first!</p>`
+        logToScreen(p)
+
+        //initialize Player one.
+        let player1Details = generatePlayerDetails(this.players[0])
+        otherPlayers.insertAdjacentHTML('beforeend',player1Details.nameTag)
+        currentPlayerArea.appendChild(player1Details.resources)
+        //skipping element 0 as that player will fill the current player field.
+        for (let index = 1; index < this.players.length; index++) {
+            // console.log(this.players[index])
+            let html = generateOtherPlayerDetails(this.players[index])
+            otherPlayers.insertAdjacentHTML('beforeend',html)
+        }
+        //create listeners for the cards. 
+
+
+
+
     }
-
-    // Ensure the starting player is indeed at index 0
-    // console.log("After rotation, player at index 0:", this.players[0].name);
-
-    // Ensure the starting player is indeed at index 0
-    // console.log("After rotation, player at index 0:", this.players[0].name);
-        
-    //initialize Player one.
-    let player1Details = generatePlayerDetails(this.players[0])
-    otherPlayers.insertAdjacentHTML('beforeend',player1Details.nameTag)
-    currentPlayerArea.appendChild(player1Details.resources)
-    //skipping element 0 as that player will fill the current player field.
-    for (let index = 1; index < this.players.length; index++) {
-        // console.log(this.players[index])
-        let html = generateOtherPlayerDetails(this.players[index])
-        otherPlayers.insertAdjacentHTML('beforeend',html)
-    }
-
-}
 }
 
 class Player {
@@ -316,6 +355,21 @@ class Player {
         
         //and the pv.
         this.victoryPoints += cardObject.pv
+
+        //now remove the card
+        const removedChildIndex = Array.from(children).indexOf(this);
+        areaInQuestion.removeChild(this);
+        console.log(`Removed child at index: ${removedChildIndex}`);
+
+        //find out what zone we are removing from
+        const key = {
+            cardAreaZone3 : 3,
+            cardAreaZone2 : 2,
+            cardAreaZone1 : 1
+        }
+
+        this.cardsOutOnTable[key[`${areaInQuestion}`]][removedChildIndex];
+
     }
 }
 /* Thinking out sudo code logic
@@ -381,6 +435,16 @@ testGame.initateGame(testGame,testPlayer1,testPlayer2,testPlayer3,testPlayer4)
 
 
 //------------------------functions below----------------------------------------
+
+
+/**
+ * Used in other functions and methods to log the details to the logbox area
+ * should always make dynamic text as a variable before calling function.
+ * @param {*} pHTML already made p HTML
+ */
+function logToScreen(pHTML){
+    logArea.insertAdjacentHTML('beforeend', pHTML)
+}
 /**
  * reminder if there is a problem with tokens and card count.
  * Also Might add reserved cards and VP logic here
@@ -412,7 +476,7 @@ function generatePlayerDetails(player) {
 
             for (let i = 0; i < 2; i++) {
                 const colorDiv = document.createElement('div');
-                console.log(player.tokens[resourceType])
+                //console.log(player.tokens[resourceType])
                 colorDiv.className = resourceColors[resourceType];
                 //reminder if there is a problem with tokens and card count. 
                 colorDiv.textContent = i ? player.tokens[resourceType] : player.cards[resourceType];
