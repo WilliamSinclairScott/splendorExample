@@ -18,7 +18,11 @@ html, body {
     "Level1Zone Level1Zone Level1Zone Level1Zone Resources CurrentPlayer CurrentPlayer"
     "LogBox LogBox LogBox LogBox LogBox CurrentPlayer CurrentPlayer";
 }
-
+.disabled {
+  opacity: 0.5; /* Example style to indicate disabled state */
+  pointer-events: none; /* Prevents mouse interaction */
+  /* Add more styles as needed */
+}
 /* ---------------card zones and child objects---------------------- */
 #Level3Zone {
   grid-area: Level3Zone;

@@ -9,10 +9,17 @@ import { level1Objects, level2Objects, level3Objects, nobleObjects } from './csv
 // Global Variables
 const colorToClass = {
     Green : 'colorG',
-    Blue : 'colorU',
-    Red : 'colorR',
+    Blue  : 'colorU',
+    Red   : 'colorR',
     White : 'colorW',
     Black : 'colorB'
+}
+const classToColor = {
+    ResourceG : `Green`,
+    ResourceU : `Blue`,
+    ResourceR : `Red`,
+    ResourceW : `White`,
+    ResourceB : `Black`
 }
 
 const cardAreaZone3 = document.getElementById('Level3Zone')
@@ -67,7 +74,7 @@ class Game {
     setPlayerCountInit = () => {
 
         if (this.players.length == 2) {
-            this.this.players.length = this.players.length;
+            this.playerCount = this.players.length;
             this.tokens = {
                 Green: 4,
                 Blue: 4,
@@ -212,6 +219,46 @@ class Game {
             }
         }
     }
+    /**
+     * disables all resource Card listeners
+     */
+    disableClickListenersForResourceCards = () => {
+        let areaInQuestion;
+        for (let k = 1; k < 4; k++) {
+            // Determine areaInQuestion based on 'loop'
+            if (3 === k) areaInQuestion = cardAreaZone3;
+            else if (2 === k) areaInQuestion = cardAreaZone2;
+            else if (1 === k) areaInQuestion = cardAreaZone1;
+    
+            const children = areaInQuestion.children;
+            
+            // Loop through each child and disable click event listeners
+            for (let i = 0; i < children.length; i++) {
+                const child = children[i];
+                child.classList.add('disabled'); // Add the 'disable' class
+            }
+        }
+    }
+    /**
+     * reEnables all resource Card listeners
+     */
+    enableClickListenersForResourceCards = () => {
+        let areaInQuestion;
+        for (let k = 1; k < 4; k++) {
+            // Determine areaInQuestion based on 'loop'
+            if (3 === k) areaInQuestion = cardAreaZone3;
+            else if (2 === k) areaInQuestion = cardAreaZone2;
+            else if (1 === k) areaInQuestion = cardAreaZone1;
+    
+            const children = areaInQuestion.children;
+            
+            // Loop through each child and disable click event listeners
+            for (let i = 0; i < children.length; i++) {
+                const child = children[i];
+                child.classList.remove('disabled'); // removes the 'disable' class
+            }
+        }
+    }
     //
     //!THIS IS WHERE YOU LEFT OFF
     //
@@ -220,36 +267,73 @@ class Game {
     //
     createClickListenersForGlobalResources = () => {
         const resources = document.querySelectorAll('.Resources > div');
-
+        let lasterClickedResource = null;
         let lastClickedResource = null;
-        let clickedResources = {};
 
         resources.forEach(resource => {
-            resource.addEventListener('click', () => {
-                const color = resource.id
-                const childDiv = resource.querySelector('div');
-                const count = parseInt(childDiv.textContent);
+            if(!(resource.id === 'ResourceY')){
+                resource.addEventListener('click', () => {
+                    //disable the cards
+                    this.disableClickListenersForResourceCards()
+                    let hateY = document.getElementById('ResourceY')
+                    hateY.classList.add('disabled')
+                    
 
-                if (color !== 'Y') {
-                    // Subtract 1 from the clicked resource's count
-                    childDiv.textContent = count - 1;
+                    const color = resource.id
+                    const childDiv = resource.querySelector('div')
+                    const count = parseInt(childDiv.textContent)
 
-                    // Check if the resource can be clicked again
-                    if ((lastClickedResource === color && count >= 3) || (lastClickedResource !== color && count >= 1)) {
-                        // Store the clicked resource and its count
-                        clickedResources[color] = (clickedResources[color] || 0) + 1;
+                    
+                    if ((lastClickedResource !== color) && (count !== 0)) { //first time
+                        // Subtract 1 from the clicked resource's count add it to the resources 
+                        // and the current player's tokens
+                        childDiv.textContent = count - 1
+                        //!Check to see if any of the tokens are too low to take from and disable them
+                        this.players[0].tokens[classToColor[color]] += 1
 
-                        // Update the last clicked resource
-                        lastClickedResource = color;
-                    } else {
-                        // Return the collected resources
-                        console.log(clickedResources);
-                        // Reset for the next round
-                        lastClickedResource = null;
-                        clickedResources = {};
+                        // Check if the resource can be clicked again
+                        if(lastClickedResource === null)lastClickedResource = resource.id //first time
+                        else if(lasterClickedResource !== null){//third time alt END
+                            //remove disables
+                            //!Check to see if any of the tokens are high to take from and ENABLE them
+                            let otherOne = document.getElementById(lastClickedResource)
+                            let otherOtherOne = document.getElementById(lasterClickedResource)
+                            let hateY = document.getElementById('ResourceY')
+                            otherOne.classList.remove('disabled')
+                            otherOtherOne.classList.remove('disabled')
+                            hateY.classList.remove('disabled')
+                            resource.classList.remove('disabled')
+
+                            logToScreen(`${this.players[0].name} picked up 1 ${classToColor[color]} token, 1 ${classToColor[lastClickedResource]} token, and 1${classToColor[lasterClickedResource]} token.`)
+                            lastClickedResource = null
+                            lasterClickedResource = null
+                            this.goToNextPlayer()
+                            this.enableClickListenersForResourceCards()
+                        }
+                        else if(lastClickedResource !== null){ //second time
+                            let otherOne = document.getElementById(lastClickedResource)
+                            resource.classList.add('disabled')
+                            otherOne.classList.add('disabled')
+                            lasterClickedResource = color
+                        }
                     }
-                }
-            });
+                    else if (lastClickedResource === color){ //second time alt END
+                        childDiv.textContent = count - 1
+                        this.players[0].tokens[classToColor[color]]+= 1
+                        //reset Logic
+                        //!Check to see if any of the tokens are high to take from and ENABLE them
+                        let hateY = document.getElementById('ResourceY')
+                        hateY.classList.remove('disabled')
+                        resource.classList.remove('disabled')
+                        this.enableClickListenersForResourceCards()
+
+                        logToScreen(`${this.players[0].name} picked up 2 ${classToColor[color]} tokens`)
+                        lastClickedResource = null;
+                        this.goToNextPlayer()
+                        
+                    }
+                });
+        }
         });
     }
     /**
@@ -257,6 +341,7 @@ class Game {
      * @param {*} cardInQuestion 
      * @param {*} locationOfCard 
      * @returns Bool of if player1 can or cannot buy input card
+     * !BUG REPORTED: HAVE ENOUGH AND CANNOT BUY!
      */
     queryPlayerToBuy = (cardInQuestion) => {
         let canI = this.players[0].canBuyCard(cardInQuestion)
@@ -266,6 +351,7 @@ class Game {
         }
 
         else {
+            console.log(this.players[0].tokens)
             let noGo = `You can not buy that card at this time! It is still ${this.players[0].name}'s turn`
             logToScreen(noGo)
             return false
@@ -294,7 +380,7 @@ class Game {
         cardAreaZone3.appendChild(createNewCardElement(this.dealNewCardlevel(3)))
         
         //Draw noble tokens
-        for(let i = 0; i <= this.playerCount; i++){
+        for(let i = 0; i <= this.players.length; i++){
             createNobleCardAddToNobleZone(this.dealNewNobleCard())
         }
         let p = `Cards are placed!`
@@ -456,7 +542,7 @@ class Player {
         green = this.tokens.Green - green
         red = this.tokens.Red     - red  
         white = this.tokens.White - white
-        colorTotals = [black,blue,green,red,white]
+        let colorTotals = [black,blue,green,red,white]
 
         //rather than trying to use yellow tokens to buy with, see how many we need total
         //because we already know we can buy the card.
@@ -514,14 +600,15 @@ Player.cleanup
 /* --------------------------------------Actual Code Begins ------------------------------------------------------- */
 
 const testPlayer1 = new Player(`William`,12345)
-const testPlayer2 = new Player(`Callum`,23456)
-const testPlayer3 = new Player(`Lily`,34657)
-const testPlayer4 = new Player(`Sara`,45678)
+const testPlayer2 = new Player(`Lily`,23456)
+// const testPlayer3 = new Player(`Callum`,34657)
+// const testPlayer4 = new Player(`Sara`,45678)
+//  ,testPlayer3,testPlayer4
 
 const testGame = new Game(level1Objects,level2Objects, level3Objects, nobleObjects,
-    testPlayer1,testPlayer2,testPlayer3,testPlayer4)
+    testPlayer1,testPlayer2)
 
-testGame.initateGame(testGame,testPlayer1,testPlayer2,testPlayer3,testPlayer4)
+testGame.initateGame()
 
 //------------------------functions below----------------------------------------
 
