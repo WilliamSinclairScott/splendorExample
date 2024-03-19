@@ -18,6 +18,7 @@ const colorToClass = {
 const cardAreaZone3 = document.getElementById('Level3Zone')
 const cardAreaZone2 = document.getElementById('Level2Zone')
 const cardAreaZone1 = document.getElementById('Level1Zone')
+const otherPlayers = document.getElementById('OtherPlayers')
 const nobleArea = document.getElementById('NobleZone')
 
 //
@@ -29,9 +30,9 @@ class Game {
      * @param {[Object]} threeDeck 
      * @param {[Object]} nobleDeck 
      */
-    constructor(oneDeck, twoDeck, threeDeck, nobleDeck) {
+    constructor(oneDeck, twoDeck, threeDeck, nobleDeck,...players) {
         this.playerCount = 0;
-        this.players = [];
+        this.players = players;
         this.currentPlayer = 0;
         this.lvlOneDeck = shuffleArray(oneDeck)
         this.lvlTwoDeck = shuffleArray(twoDeck)
@@ -49,7 +50,7 @@ class Game {
     }
     /**
      * Initializes available tokens for the game based on the number of players
-     * 
+     *  Sets number of players eleement
      */
     setPlayerCountInit = () => {
 
@@ -116,6 +117,63 @@ class Game {
     dealNewNobleCard = () => {
         return this.nobleDeck.pop()
     }
+    /**
+ * Initializes the gamestate
+ * 
+ */
+initateGame = () => {
+    //There should be a prompt for asking how many players.
+        //NAMESPACE for said action
+    
+    //Demo material we gonna make 4 players play demo
+
+    this.setPlayerCountInit()
+    
+    //create new lvl1 cards
+    cardAreaZone1.appendChild(createNewCardElement(this.dealNewCardlevel(1)))
+    cardAreaZone1.appendChild(createNewCardElement(this.dealNewCardlevel(1)))
+    cardAreaZone1.appendChild(createNewCardElement(this.dealNewCardlevel(1)))
+    //create new lvl2 cards
+    cardAreaZone2.appendChild(createNewCardElement(this.dealNewCardlevel(2)))
+    cardAreaZone2.appendChild(createNewCardElement(this.dealNewCardlevel(2)))
+    cardAreaZone2.appendChild(createNewCardElement(this.dealNewCardlevel(2)))
+    //create new lvl3 cards
+    cardAreaZone3.appendChild(createNewCardElement(this.dealNewCardlevel(3)))
+    cardAreaZone3.appendChild(createNewCardElement(this.dealNewCardlevel(3)))
+    cardAreaZone3.appendChild(createNewCardElement(this.dealNewCardlevel(3)))
+    //Draw noble tokens
+    for(let i = 0; i <= this.playerCount; i++){
+        createNobleCardAddToNobleZone(this.dealNewNobleCard())
+    }
+    //Initialize global tokens
+    const startingResources = {
+        "ResourceG": this.tokens.Green,
+        "ResourceR": this.tokens.Red,
+        "ResourceU": this.tokens.Blue,
+        "ResourceB": this.tokens.Black,
+        "ResourceW": this.tokens.White,
+        "ResourceY": this.tokens.Yellow
+    }
+
+    updateResourceNumbers(startingResources)
+
+    //Randomly choose starting player and then from there, set them to index0 in the players array.
+    this.chooseStartingPlayer()
+    console.log(this.currentPlayer)
+    let playerThatIWant = this.players[this.currentPlayer].name;
+    console.log(playerThatIWant)
+    while(playerThatIWant == this.players[0].name){
+        this.players.push(this.players.shift());
+    }
+
+    //skipping element 0 as that player will fill the current player field.
+    for (let index = 1; index < this.players.length; index++) {
+        console.log(this.players[index])
+        let html = generateOtherPlayerDetails(this.players[index])
+        otherPlayers.insertAdjacentHTML('beforeend',html)
+        
+    }
+}
 }
 
 class Player {
@@ -123,6 +181,7 @@ class Player {
     constructor(playerName, playerID) {
         this.name = playerName
         this.id = playerID
+        this.reservedCards = []
         this.tokens = {
             Green: 0,
             Blue: 0,
@@ -286,65 +345,57 @@ Player.cleanup
 // console.log(level2Objects);
 // console.log(level3Objects);
 // console.log(nobleObjects);
-const testGame = new Game(level1Objects,level2Objects, level3Objects, nobleObjects)
-
-// console.log(testGame)
-// console.log(Game);
-
 const testPlayer1 = new Player(`William`,12345)
 const testPlayer2 = new Player(`Callum`,23456)
 const testPlayer3 = new Player(`Lily`,34657)
 const testPlayer4 = new Player(`Sara`,45678)
 
-initateGame(testGame)
-testGame.chooseStartingPlayer()
-console.log(testGame.currentPlayer)
+const testGame = new Game(level1Objects,level2Objects, level3Objects, nobleObjects,
+    testPlayer1,testPlayer2,testPlayer3,testPlayer4)
+
+// console.log(testGame)
+// console.log(Game);
+
+testGame.initateGame(testGame,testPlayer1,testPlayer2,testPlayer3,testPlayer4)
 
 
 //------------------------functions below----------------------------------------
 
 /**
- * Initializes the gamestate
- * @param {*} gameObject 
+ * 
+ * @param {*} player the player that needs to be added to OtherPlayers
+ * @returns the html that contains that player's info to be appended to .OtherPlayers
  */
-function initateGame(gameObject) {
-    //There should be a prompt for asking how many players.
-        //NAMESPACE for said action
+function generateOtherPlayerDetails(player) {
+    let html = `<div id="player${player.id}">
+        <span>${player.name}(${player.victoryPoints} VP)</span>
+        <div>`;
     
-    //Demo material we gonna make 4 players play demo
-    gameObject.addPlayer(testPlayer1)
-    gameObject.addPlayer(testPlayer2)
-    gameObject.addPlayer(testPlayer3)
-    gameObject.addPlayer(testPlayer4)
-    gameObject.setPlayerCountInit()
+    Object.entries(player.cards).forEach(([color, count]) => {
+        html += `<div class="color${
+            (color === `Blue`) ? 
+            color.charAt(2).toUpperCase() : color.charAt(0).toUpperCase()
+        }">${count}</div>`;
+    });
+
+    html += `<button class="reserved">${player.reservedCards.length}</button>`;
     
-    //create new lvl1 cards
-    cardAreaZone1.appendChild(createNewCardElement(gameObject.dealNewCardlevel(1)))
-    cardAreaZone1.appendChild(createNewCardElement(gameObject.dealNewCardlevel(1)))
-    cardAreaZone1.appendChild(createNewCardElement(gameObject.dealNewCardlevel(1)))
-    //create new lvl2 cards
-    cardAreaZone2.appendChild(createNewCardElement(gameObject.dealNewCardlevel(2)))
-    cardAreaZone2.appendChild(createNewCardElement(gameObject.dealNewCardlevel(2)))
-    cardAreaZone2.appendChild(createNewCardElement(gameObject.dealNewCardlevel(2)))
-    //create new lvl3 cards
-    cardAreaZone3.appendChild(createNewCardElement(gameObject.dealNewCardlevel(3)))
-    cardAreaZone3.appendChild(createNewCardElement(gameObject.dealNewCardlevel(3)))
-    cardAreaZone3.appendChild(createNewCardElement(gameObject.dealNewCardlevel(3)))
-    //Draw noble tokens
-    for(let i = 0; i <= gameObject.playerCount; i++){
-        createNobleCardAddToNobleZone(gameObject.dealNewNobleCard())
-    }
-    //initialize global tokens
-    const startingResources = {
-        "ResourceG": gameObject.tokens.Green,
-        "ResourceR": gameObject.tokens.Red,
-        "ResourceU": gameObject.tokens.Blue,
-        "ResourceB": gameObject.tokens.Black,
-        "ResourceW": gameObject.tokens.White,
-        "ResourceY": gameObject.tokens.Yellow
-    }
-    updateResourceNumbers(startingResources)
+    Object.entries(player.tokens).forEach(([color, count]) => {
+        if (color !== 'Yellow') {
+            html += `<div class="color${
+                (color === `Blue`) ? 
+                color.charAt(2).toUpperCase() : color.charAt(0).toUpperCase()
+            }">${count}</div>`;
+        }
+    });
+
+    html += `<div class="colorY">${player.tokens.Yellow}</div>
+        </div>
+      </div>`;
+    
+    return html;
 }
+
 
 /**
  * Used in initateGame to add the noble cards to the board
