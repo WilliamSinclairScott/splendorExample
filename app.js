@@ -23,13 +23,15 @@ const nobleArea = document.getElementById('NobleZone')
 const currentPlayerArea = document.getElementById('CurrentPlayer')
 const logArea = document.getElementById('LogBox')
 const globalResourcePool = {
-    'Green' : ResourceG,
-    'Red' : ResourceR,
-    'Blue' : ResourceU,
-    'Black' : ResourceB,
-    'White' : ResourceW,
-    'Yellow' : ResourceY,
-}
+    'Green': document.getElementById('ResourceG'),
+    'Red': document.getElementById('ResourceR'),
+    'Blue': document.getElementById('ResourceU'),
+    'Black': document.getElementById('ResourceB'),
+    'White': document.getElementById('ResourceW'),
+    'Yellow': document.getElementById('ResourceY')
+};
+let actionCounter = 0
+
 //
 class Game {
     /**
@@ -125,7 +127,10 @@ class Game {
             let html = generateOtherPlayerDetails(this.players[index])
             otherPlayers.insertAdjacentHTML('beforeend',html)
         }
-        let p = `<p>It is ${this.players[0].name}'s turn.</p>`
+
+        //!resetlisteners if you need to 
+
+        let p = `It is ${this.players[0].name}'s turn.`
         logToScreen(p)
 
     }
@@ -198,17 +203,53 @@ class Game {
             };
         
             // Add event listeners to all children
+            //!make sure that other functions that remove listeners and add listeners also have the hasEventListener prop
             for (let i = 0; i < children.length; i++) {
-                children[i].addEventListener('click', recursiveAddEventListener());
+                if (!children[i].hasEventListener) {
+                    children[i].addEventListener('click', recursiveAddEventListener());
+                    children[i].hasEventListener = true;
+                }
             }
         }
     }
+    //
+    //!THIS IS WHERE YOU LEFT OFF
+    //
+    //!YOU NEED TO MAKE THIS LOGIC WORK CORRECTLY. SEE GPT FOR WHERE YOU WERE
+    //
+    //
     createClickListenersForGlobalResources = () => {
-        Object.key.forEach(color => {
-            let resourceTokenColor = document.getElementById(color);
-            resourceTokenColor.addEventListener('click',() => {
+        const resources = document.querySelectorAll('.Resources > div');
 
-            })
+        let lastClickedResource = null;
+        let clickedResources = {};
+
+        resources.forEach(resource => {
+            resource.addEventListener('click', () => {
+                const color = resource.id
+                const childDiv = resource.querySelector('div');
+                const count = parseInt(childDiv.textContent);
+
+                if (color !== 'Y') {
+                    // Subtract 1 from the clicked resource's count
+                    childDiv.textContent = count - 1;
+
+                    // Check if the resource can be clicked again
+                    if ((lastClickedResource === color && count >= 3) || (lastClickedResource !== color && count >= 1)) {
+                        // Store the clicked resource and its count
+                        clickedResources[color] = (clickedResources[color] || 0) + 1;
+
+                        // Update the last clicked resource
+                        lastClickedResource = color;
+                    } else {
+                        // Return the collected resources
+                        console.log(clickedResources);
+                        // Reset for the next round
+                        lastClickedResource = null;
+                        clickedResources = {};
+                    }
+                }
+            });
         });
     }
     /**
@@ -225,7 +266,7 @@ class Game {
         }
 
         else {
-            let noGo = `<p> You can not buy that card at this time!</p><p> It is still ${this.players[0].name}'s turn`
+            let noGo = `You can not buy that card at this time! It is still ${this.players[0].name}'s turn`
             logToScreen(noGo)
             return false
         }
@@ -256,7 +297,7 @@ class Game {
         for(let i = 0; i <= this.playerCount; i++){
             createNobleCardAddToNobleZone(this.dealNewNobleCard())
         }
-        let p = `<p>Cards are placed!</p>`
+        let p = `Cards are placed!`
         logToScreen(p)
         //Initialize global tokens
         const startingResources = {
@@ -280,7 +321,7 @@ class Game {
         for (let i = 0; i < rotations; i++) {
             this.players.push(this.players.shift());
         }
-        p = `<p>Player ${this.players[0].name} is going first!</p>`
+        p = `Player ${this.players[0].name} is going first!`
         logToScreen(p)
 
         //initialize Player one.
@@ -296,7 +337,7 @@ class Game {
 
         //create listeners for the cards. 
         this.createClickListenersForResourceCards()
-        
+        this.createClickListenersForGlobalResources()
     }
 }
 
@@ -499,7 +540,7 @@ function removeAllChildren(parent) {
  * @param {*} pHTML already made p HTML
  */
 function logToScreen(pHTML){
-    logArea.insertAdjacentHTML('beforeend', pHTML)
+    logArea.insertAdjacentHTML('beforeend', `<p>${pHTML} (${actionCounter++})</p>`)
     logArea.scrollTop = logArea.scrollHeight;
 }
 /**
