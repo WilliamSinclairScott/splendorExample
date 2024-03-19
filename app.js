@@ -135,40 +135,40 @@ class Game {
      */
     createClickListenersForResourceCards = (areaInQuestion) => {
         const children = areaInQuestion.children;
-        const key = {
-            cardAreaZone3 : 3,
-            cardAreaZone2 : 2,
-            cardAreaZone1 : 1
-        }
+        let num = 0
+
+        if(areaInQuestion === cardAreaZone3) num = 3
+        else if(areaInQuestion === cardAreaZone2) num = 2
+        else if(areaInQuestion === cardAreaZone1) num = 1
 
         for (let i = 0; i < children.length; i++) {
-            children[i].addEventListener('click', function() {
-                if(this.queryToBuy(this.cardsOutOnTable[key][i])){
+            children[i].addEventListener('click', () => {
+                if(this.queryPlayerToBuy(this.cardsOutOnTable[num][i])){
                     areaInQuestion.removeChild(this);
-                    console.log(`Removed child`);
+                    this.cardsOutOnTable[key].splice(i,1)
+                    console.log(`Removed card`);
                 }
             });
         }   
-
-        /*queryToBuy(cardInQuestion,location of card)
-            this.currentplayer.canbuy?
-                yes buy
-                    buy removes in array
-        */
     }
     /**
      * Asks if player1 (current player) can buy the input card
      * @param {*} cardInQuestion 
      * @param {*} locationOfCard 
+     * @returns Bool of if player1 can or cannot buy input card
      */
     queryPlayerToBuy = (cardInQuestion) => {
-        if (this.players[0].canBuyCard(cardInQuestion)) {
-            this.players[0].buyCard(cardInQuestion,this.players[0].canBuyCard(cardInQuestion))
+        let canI = this.players[0].canBuyCard(cardInQuestion)
+        if (canI) {
+            this.players[0].buyCard(cardInQuestion,canI)
             return true
         }
 
         else {
-            logToScreen(`<p> You can not buy that card at this time!`)
+            let noGo = `<p> You can not buy that card at this time!`
+            if(logArea.lastElementChild === noGo)
+                logToScreen(`<p>You Either Keep Clicking, or Something's the matter</P>`)
+            else{logToScreen(noGo)}
             return false
         }
     }
@@ -235,8 +235,11 @@ class Game {
             let html = generateOtherPlayerDetails(this.players[index])
             otherPlayers.insertAdjacentHTML('beforeend',html)
         }
+        
         //create listeners for the cards. 
-
+        this.createClickListenersForResourceCards(cardAreaZone3)
+        this.createClickListenersForResourceCards(cardAreaZone2)
+        this.createClickListenersForResourceCards(cardAreaZone1)
 
 
 
@@ -271,7 +274,6 @@ class Player {
      * method used to check if the player needs to discard tokens
      * @returns boolean if player has > 10 tokens
      */
-    //NEED TO ADD LOGIC FOR CARDS
     hasTooManyTokens = () => {
         total = (this.tokens.Green + this.tokens.Blue + this.tokens.Red + 
                 this.tokens.White + this.tokens.Black + this.tokens.Yellow)
@@ -285,29 +287,34 @@ class Player {
      * @param {*} cardObject the card that you want to check if it can be bought
      * @returns boolean if player can buy the card
      */
-    //NEED TO ADD LOGIC FOR CARDS
     canBuyCard = (cardObject) => {
+        //reduce cost using cards the player has first to 0 or the difference.
+        let black = cardObject.Black  < this.cards.Black ? 0 : cardObject.Black  - this.cards.Black
+        let blue  = cardObject.Blue  < this.cards.Blue  ? 0 : cardObject.Blue  - this.cards.Blue 
+        let green = cardObject.Green < this.cards.Green ? 0 : cardObject.Green - this.cards.Green
+        let red   = cardObject.Red < this.cards.Red   ? 0 : cardObject.Red - this.cards.Red  
+        let white = cardObject.White < this.cards.White ? 0 : cardObject.White - this.cards.White
         // without the gold token (yellow)
         if (
-            this.tokens.Black >= cardObject.black &&
-            this.tokens.Blue >= cardObject.blue &&
-            this.tokens.Green >= cardObject.green &&
-            this.tokens.Red >= cardObject.red &&
-            this.tokens.White >= cardObject.white
+            this.tokens.Black >= black &&
+            this.tokens.Blue >=  blue  &&
+            this.tokens.Green >= green &&
+            this.tokens.Red >=   red   &&
+            this.tokens.White >= white
         ){ return true}
-        //wDo we even check about for "yellow" logic?
+        //Do we even check about for "yellow" logic?
         else if (this.tokens.Yellow > 0) {
             //have to check to see how many gold tokens we need.
 
             //init an array of all the tokens deficit
-            let black = this.tokens.Black - cardObject.black 
-            let blue = this.tokens.Blue - cardObject.blue 
-            let green = this.tokens.Green - cardObject.green
-            let red = this.tokens.Red - cardObject.red
-            let white = this.tokens.White - cardObject.white
+            black = this.tokens.Black - black
+            blue = this.tokens.Blue   - blue 
+            green = this.tokens.Green - green
+            red = this.tokens.Red     - red  
+            white = this.tokens.White - white
             let colorTotals = [black,blue,green,red,white]
 
-            //add up how many gold coins that equates to
+            //add up how many gold coins that equates to (x -- y = x + y)
             let tokensReq = colorTotals.forEach(total => {
                 let sum = 0;
                 if (total < 0) {
@@ -322,7 +329,7 @@ class Player {
             }
         }
         else{return false}
-        
+        return false //catchall
     }
     /**
      * method used to update the player object when it buys a card.
@@ -330,19 +337,30 @@ class Player {
      * @param {*} cardObject the card that player wants to buy.
      * @param {*} canBuyCard boolean used to make sure that we can actually buy the card!
      */
-    buyCard = (cardObject,canBuyCard,childInQuestion) => {
+    buyCard = (cardObject,canBuyCard) => {
 
         //have error check, if canBuyCard flase, throw error, we shouldn't be here.
         if (!canBuyCard){
             throw new Error('You can not buy this card, why did this happen!?');
         }
+
+
         //do all the math before hand
-        let black = this.tokens.Black - cardObject.black 
-        let blue = this.tokens.Blue - cardObject.blue 
-        let green = this.tokens.Green - cardObject.green
-        let red = this.tokens.Red - cardObject.red
-        let white = this.tokens.White - cardObject.white
-        let colorTotals = [black,blue,green,red,white]
+
+        //reduce cost using cards the player has first to 0 or the difference.
+        let black = cardObject.Black  < this.cards.Black ? 0 : cardObject.Black  - this.cards.Black
+        let blue  = cardObject.Blue  < this.cards.Blue  ? 0 : cardObject.Blue  - this.cards.Blue 
+        let green = cardObject.Green < this.cards.Green ? 0 : cardObject.Green - this.cards.Green
+        let red   = cardObject.Red < this.cards.Red   ? 0 : cardObject.Red - this.cards.Red  
+        let white = cardObject.White < this.cards.White ? 0 : cardObject.White - this.cards.White
+
+        //Figure out how much we can buy without yellow
+        black = this.tokens.Black - black
+        blue = this.tokens.Blue   - blue 
+        green = this.tokens.Green - green
+        red = this.tokens.Red     - red  
+        white = this.tokens.White - white
+        colorTotals = [black,blue,green,red,white]
 
         //rather than trying to use yellow tokens to buy with, see how many we need total
         //because we already know we can buy the card.
@@ -366,22 +384,7 @@ class Player {
         this.cards[cardObject.color] += 1
         
         //and the pv.
-        this.victoryPoints += cardObject.pv
-
-        //now remove the card
-        const removedChildIndex = Array.from(childInQuestion).indexOf(this);
-        areaInQuestion.removeChild(this);
-        console.log(`Removed child at index: ${removedChildIndex}`);
-
-        //find out what zone we are removing from
-        const key = {
-            cardAreaZone3 : 3,
-            cardAreaZone2 : 2,
-            cardAreaZone1 : 1
-        }
-
-        this.cardsOutOnTable[key[`${areaInQuestion}`]][removedChildIndex];
-
+        this.victoryPoints += cardObject.PV
     }
 }
 /* Thinking out sudo code logic
@@ -414,12 +417,12 @@ Player.cleanup
 // class cardObject {
 //     constructor(color,pv,black,blue,green,red,white){
 //         this.color= color,
-//         this.pv   = pv,
-//         this.black= black,
-//         this.blue = blue,
-//         this.green= green,
-//         this.red  = red,
-//         this.white= white
+//         this.PV   = pv,
+//         this.Black= black,
+//         this.Blue = blue,
+//         this.Green= green,
+//         this.Red  = red,
+//         this.White= white
 //     }
     
 // };
