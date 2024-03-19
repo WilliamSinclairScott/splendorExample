@@ -123,9 +123,6 @@ class Game {
  */
 initateGame = () => {
     //There should be a prompt for asking how many players.
-        //NAMESPACE for said action
-    
-    //Demo material we gonna make 4 players play demo
 
     this.setPlayerCountInit()
     
@@ -166,12 +163,14 @@ initateGame = () => {
         this.players.push(this.players.shift());
     }
 
+    //initialize Player one.
+        //  NOT DONE
+
     //skipping element 0 as that player will fill the current player field.
     for (let index = 1; index < this.players.length; index++) {
         console.log(this.players[index])
         let html = generateOtherPlayerDetails(this.players[index])
         otherPlayers.insertAdjacentHTML('beforeend',html)
-        
     }
 }
 }
