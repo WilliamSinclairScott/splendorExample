@@ -176,6 +176,12 @@ class Game {
         let player1Details = generatePlayerDetails(this.players[0])
         otherPlayers.insertAdjacentHTML('beforeend',player1Details.nameTag)
         currentPlayerArea.appendChild(player1Details.resources)
+        currentPlayerArea.appendChild(player1Details.resources)
+        currentPlayerArea.appendChild(player1Details.reserved)
+        this.players[0].reservedCards.forEach(reservedCard => {
+            const reservedArea = document.getElementById(`ReservedCards`)
+            reservedArea.appendChild(createNewCardElement(reservedCard))
+        });
         //skipping element 0 as that player will fill the current player field.
         for (let index = 1; index < this.players.length; index++) {
             let html = generateOtherPlayerDetails(this.players[index])
@@ -575,6 +581,11 @@ class Game {
         let player1Details = generatePlayerDetails(this.players[0])
         otherPlayers.insertAdjacentHTML('beforeend',player1Details.nameTag)
         currentPlayerArea.appendChild(player1Details.resources)
+        currentPlayerArea.appendChild(player1Details.reserved)
+        this.players[0].reservedCards.forEach(reservedCard => {
+            const reservedArea = document.getElementById(`ReservedCards`)
+            reservedArea.appendChild(reservedCard)
+        });
         //skipping element 0 as that player will fill the current player field.
         for (let index = 1; index < this.players.length; index++) {
             let html = generateOtherPlayerDetails(this.players[index])
@@ -600,7 +611,7 @@ class Player {
             Red: 0,
             White: 0,
             Black: 0,
-            Yellow: 10
+            Yellow: 0
         }
         this.cards = {
             Green: 0,
@@ -697,7 +708,7 @@ class Player {
     /**
      * method used to update the player object when it buys a card.
      * HAVE TO CALL `removeCard` AND `Game.dealNewCardlevel`!
-     * !I need to make it so that the tokens removed from the player return to the pool of global
+     * 
      * @param {*} cardObject the card that player wants to buy.
      * @param {*} canBuyCard boolean used to make sure that we can actually buy the card!
      * @returns special object used to replenish the tokens used by the player
@@ -859,15 +870,18 @@ function logToScreen(pHTML){
  * reminder if there is a problem with tokens and card count.
  * Also Might add reserved cards and VP logic here
  * @param {*} player player 1 details
- * @returns object containing the nametag used in the OtherPlayer area, and the div for the Player Area resources
+ * @returns {nameTag : nameTag, resources : playerResourcesDiv, reserved: playerReservedDiv }
  * 
  */
 function generatePlayerDetails(player) {
     //make tag for player 1
     let nameTag = `<span id="player${player.id}">${player.name}(${player.victoryPoints} VP)</span>`
     // Create the div element for player resources
-    const playerResourcesDiv = document.createElement('div');
-    playerResourcesDiv.className = 'PlayerResources';
+    const playerResourcesDiv = document.createElement('div')
+    playerResourcesDiv.className = 'PlayerResources'
+    // Create the div element for the player's reserved cards
+    const playerReservedDiv = document.createElement('div')
+    playerReservedDiv.id = `ReservedCards`
 
     // Define resource types and their corresponding colors
     const resourceColors = {
@@ -906,7 +920,7 @@ function generatePlayerDetails(player) {
     yellowResourceDiv.appendChild(yellowColorDiv);
     playerResourcesDiv.appendChild(yellowResourceDiv);
 
-    return {nameTag : nameTag, resources : playerResourcesDiv };
+    return {nameTag : nameTag, resources : playerResourcesDiv, reserved: playerReservedDiv };
 }
 /**
  * 
@@ -939,6 +953,8 @@ function generateOtherPlayerDetails(player) {
     html += `<div class="colorY">${player.tokens.Yellow}</div>
         </div>
       </div>`;
+
+    html += `<div id="ReservedCards"></div>`
     
     return html;
 }
