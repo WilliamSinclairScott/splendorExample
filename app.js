@@ -316,146 +316,179 @@ class Game {
         const resources = document.querySelectorAll('.Resources > div');
         let lasterClickedResource = null;
         let lastClickedResource = null;
-
+    
         resources.forEach(resource => {
-            if(!(resource.id === 'ResourceY')){
+            if (!(resource.id === 'ResourceY')) {
                 resource.addEventListener('click', () => {
-                    //disable the cards
-                    this.disableClickListenersForResourceCards()
-                    let hateY = document.getElementById('ResourceY')
-                    hateY.classList.add('disabled')
-
-                    const color = resource.id
-                    const childDiv = resource.querySelector('div')
-                    const count = parseInt(childDiv.textContent)
-
-                    
+                    // Disable the cards
+                    this.disableClickListenersForResourceCards();
+                    let hateY = document.getElementById('ResourceY');
+                    hateY.classList.add('disabled');
+    
+                    const color = resource.id;
+                    const childDiv = resource.querySelector('div');
+                    const count = parseInt(childDiv.textContent);
+    
                     if ((lastClickedResource !== color) && (count !== 0)) { //first time
                         // Subtract 1 from the clicked resource's count add it to the resources 
                         // of the current player's tokens
-                        childDiv.textContent = count - 1
-                        //!Check to see if any of the tokens are too low to take from and disable them
-                        this.players[0].tokens[classToColor[color]] += 1
-
+                        childDiv.textContent = count - 1;
+                        //Check to see if any of the tokens are too low to take from and disable them
+                        for (let color in globalResourcePool) {
+                            if (parseInt(globalResourcePool[color].querySelector('div').textContent) === 0) {
+                                globalResourcePool[color].classList.add('disabled');
+                            }
+                        }
+                        this.players[0].tokens[classToColor[color]] += 1;
+    
                         // Check if the resource can be clicked again
-                        if(lastClickedResource === null)lastClickedResource = resource.id //first time
-                        else if(lasterClickedResource !== null){//third time alt END
+                        if (lastClickedResource === null) lastClickedResource = resource.id; //first time
+                        else if (lasterClickedResource !== null) { //third time alt END
                             //remove disables
-                            //!Check to see if any of the tokens are high to take from and ENABLE them
-                            let otherOne = document.getElementById(lastClickedResource)
-                            let otherOtherOne = document.getElementById(lasterClickedResource)
-                            let hateY = document.getElementById('ResourceY')
-                            otherOne.classList.remove('disabled')
-                            otherOtherOne.classList.remove('disabled')
-                            hateY.classList.remove('disabled')
-                            resource.classList.remove('disabled')
-
-                            logToScreen(`${this.players[0].name} picked up 1 ${classToColor[color]} token, 1 ${classToColor[lastClickedResource]} token, and 1${classToColor[lasterClickedResource]} token.`)
-                            lastClickedResource = null
-                            lasterClickedResource = null
-                            this.goToNextPlayer()
-                            this.enableClickListenersForResourceCards()
+                            let otherOne = document.getElementById(lastClickedResource);
+                            let otherOtherOne = document.getElementById(lasterClickedResource);
+                            let hateY = document.getElementById('ResourceY');
+                            otherOne.classList.remove('disabled');
+                            otherOtherOne.classList.remove('disabled');
+                            hateY.classList.remove('disabled');
+                            resource.classList.remove('disabled');
+    
+                            logToScreen(`${this.players[0].name} picked up 1 ${classToColor[color]} token, 1 ${classToColor[lastClickedResource]} token, and 1${classToColor[lasterClickedResource]} token.`);
+                            lastClickedResource = null;
+                            lasterClickedResource = null;
+                            this.goToNextPlayer();
+                            this.enableClickListenersForResourceCards();
+                        } else if (lastClickedResource !== null) { //second time
+                            let otherOne = document.getElementById(lastClickedResource);
+                            resource.classList.add('disabled');
+                            otherOne.classList.add('disabled');
+                            lasterClickedResource = color;
                         }
-                        else if(lastClickedResource !== null){ //second time
-                            let otherOne = document.getElementById(lastClickedResource)
-                            resource.classList.add('disabled')
-                            otherOne.classList.add('disabled')
-                            lasterClickedResource = color
-                        }
-                    }
-                    else if (lastClickedResource === color){ //second time alt END
-                        childDiv.textContent = count - 1
-                        this.players[0].tokens[classToColor[color]]+= 1
+                    } else if (lastClickedResource === color) { //second time alt END
+                        childDiv.textContent = count - 1;
+                        this.players[0].tokens[classToColor[color]] += 1;
                         //reset Logic
-                        let hateY = document.getElementById('ResourceY')
-                        hateY.classList.remove('disabled')
-                        resource.classList.remove('disabled')
-                        this.enableClickListenersForResourceCards()
-
-                        logToScreen(`${this.players[0].name} picked up 2 ${classToColor[color]} tokens`)
+                        let hateY = document.getElementById('ResourceY');
+                        hateY.classList.remove('disabled');
+                        resource.classList.remove('disabled');
+                        this.enableClickListenersForResourceCards();
+    
+                        logToScreen(`${this.players[0].name} picked up 2 ${classToColor[color]} tokens`);
                         lastClickedResource = null;
-                        this.goToNextPlayer()
-                        
+                        this.goToNextPlayer();
+    
                     }
                     //must check first time at the end if that last resource is too small for the double click
-                    if (lastClickedResource !== null){
-                        let prev = document.getElementById(lastClickedResource)
-                        const childDiv = resource.querySelector('div')
-                        const numberIn = parseInt(childDiv.textContent)
-                        if (numberIn < 3) prev.classList.add('disabled')
+                    if (lastClickedResource !== null) {
+                        let prev = document.getElementById(lastClickedResource);
+                        const childDiv = resource.querySelector('div');
+                        const numberIn = parseInt(childDiv.textContent);
+                        if (numberIn < 3) prev.classList.add('disabled');
+                    }
+                    
+                    // Check if all resources are disabled or have count 0 and go to the next player
+                    let allResourcesDisabled = true;
+                    resources.forEach(resource => {
+                        if (!resource.classList.contains('disabled') && parseInt(resource.querySelector('div').textContent) > 0) {
+                            allResourcesDisabled = false;
+                        }
+                    });
+                    if (allResourcesDisabled) {//Sad ending
+                        logToScreen(`${this.players[0].name} took what they could and only ended up with 1 ${classToColor[color]} ${lastClickedResource !== null ? (`and 1 `+classToColor[lastClickedResource]+`.`) : `.`}`)
+                        //reEnable all other resources
+                        for(let color in globalResourcePool){
+                            globalResourcePool[color].classList.remove('disabled')
+                        }
+                        this.enableClickListenersForResourceCards();
+                        this.goToNextPlayer();
                     }
                 });
-        }
+            }
         });
     }
+    /**
+     * !few bugs when there isn't enough resources, will visit later
+     */
     createClickLisnersForYellowAndReservations = () => {
         //everything starts when Yellow Resource get's clicked
         let resourceY = document.getElementById('ResourceY')
         resourceY.addEventListener('click', () => {
-            //Add the gold to the player if there are any left
-            const childDiv = resourceY.querySelector('div')
-            const count = parseInt(childDiv.textContent)
-            if (count !== 0){
-                this.players[0].tokens[classToColor[`resourceY`]] += 1
-            }
-            // Remove all event listeners from the element
-            function removeAllEventListeners(parentElement){
-                const children = parentElement.children;
-                Array.from(children).forEach(element => {
-                    
-                    const clonedElement = element.cloneNode(true);
-                    element.parentNode.replaceChild(clonedElement, element);
-                });
-            }
-            removeAllEventListeners(cardAreaZone1)
-            removeAllEventListeners(cardAreaZone2)
-            removeAllEventListeners(cardAreaZone3)
+            if (!(this.players[0].reservedCards.length >= 3)){
+                const childDiv = resourceY.querySelector('div')
+                const count = parseInt(childDiv.textContent)
+                //Add the gold to the player if there are any left
+                if (count !== 0){
+                    this.players[0].tokens[`Yellow`] += 1
+                    childDiv.textContent = count - 1
+                }
+                // Remove all event listeners from the element
+                function removeAllEventListeners(parentElement){
+                    const children = parentElement.children;
+                    Array.from(children).forEach(element => {
+                        
+                        const clonedElement = element.cloneNode(true);
+                        element.parentNode.replaceChild(clonedElement, element);
+                    });
+                }
+                removeAllEventListeners(cardAreaZone1)
+                removeAllEventListeners(cardAreaZone2)
+                removeAllEventListeners(cardAreaZone3)
 
-            //and disable all the other resources
-            for(let color in globalResourcePool){
-                globalResourcePool[color].classList.add('disabled')
-            }
-            
-            //Add a reservation listener to each card available.
-            for (let k = 1; k < 4; k++) {
-                let areaInQuestion;
-                // Determine areaInQuestion based on 'loop'
-                if (3 === k) areaInQuestion = cardAreaZone3;
-                else if (2 === k) areaInQuestion = cardAreaZone2;
-                else if (1 === k) areaInQuestion = cardAreaZone1;
+                //and disable all the other resources
+                for(let color in globalResourcePool){
+                    globalResourcePool[color].classList.add('disabled')
+                }
                 
-                const children = areaInQuestion.children;
-                console.log()
-                // Add event listeners to all children
-                for (let i = 0; i < children.length; i++) {
-                    if (!children[i].hasEventListener) {
-                        children[i].addEventListener('click', (event) =>{
-                            const clickedElement = event.currentTarget;
-                            let index = i;
-                            //const dynamicIndex = Array.from(clickedElement.parentElement.children).indexOf(clickedElement);
-                            //reserve the card
-                            this.players[0].reserveCard(this.cardsOutOnTable[k][index])
-                            // Remove the clicked card
-                            areaInQuestion.removeChild(clickedElement);
-                            // Remove the card from the 'this.cardsOutOnTable' array
-                            this.cardsOutOnTable[k].splice(index, 1);
-                            // Replace the removed card with a new one and append a new event listener
-                            areaInQuestion.appendChild(createNewCardElement(this.dealNewCardlevel(k)));
-                            //Remove all of the Reservation Listeners
-                            removeAllEventListeners(cardAreaZone1)
-                            removeAllEventListeners(cardAreaZone2)
-                            removeAllEventListeners(cardAreaZone3)
-                            //Add the normal buy card listeners
-                            this.createClickListenersForResourceCards()
-                            //reEnable all other resources
-                            for(let color in globalResourcePool){
-                                globalResourcePool[color].classList.remove('disabled')
-                            }
-                            this.goToNextPlayer();
-                        });
-                        children[i].hasEventListener = true;
+                //Add a reservation listener to each card available.
+                for (let k = 1; k < 4; k++) {
+                    let areaInQuestion;
+                    // Determine areaInQuestion based on 'loop'
+                    if (3 === k) areaInQuestion = cardAreaZone3;
+                    else if (2 === k) areaInQuestion = cardAreaZone2;
+                    else if (1 === k) areaInQuestion = cardAreaZone1;
+                    
+                    const children = areaInQuestion.children;
+                    console.log()
+                    // Add event listeners to all children
+                    for (let i = 0; i < children.length; i++) {
+                        if (!children[i].hasEventListener) {
+                            children[i].addEventListener('click', (event) =>{
+                                const clickedElement = event.currentTarget;
+                                let index = i;
+                                //const dynamicIndex = Array.from(clickedElement.parentElement.children).indexOf(clickedElement);
+                                //reserve the card
+                                this.players[0].reserveCard(this.cardsOutOnTable[k][index])
+                                // Remove the clicked card
+                                areaInQuestion.removeChild(clickedElement);
+                                // Remove the card from the 'this.cardsOutOnTable' array
+                                this.cardsOutOnTable[k].splice(index, 1);
+                                // Replace the removed card with a new one and append a new event listener
+                                areaInQuestion.appendChild(createNewCardElement(this.dealNewCardlevel(k)));
+                                //Remove all of the Reservation Listeners
+                                removeAllEventListeners(cardAreaZone1)
+                                removeAllEventListeners(cardAreaZone2)
+                                removeAllEventListeners(cardAreaZone3)
+                                //Add the normal buy card listeners
+                                this.createClickListenersForResourceCards()
+                                //reEnable all other resources
+                                for(let color in globalResourcePool){
+                                    globalResourcePool[color].classList.remove('disabled')
+                                }
+                                logToScreen((count === 0) ? `${this.players[0].name} just reserved a card` : `${this.players[0].name} took a gold and reserved a card`)
+                                this.goToNextPlayer();
+                            });
+                            children[i].hasEventListener = true;
+                        }
                     }
                 }
+            }
+            else if(count !== 0){
+                const childDiv = resourceY.querySelector('div')
+                const count = parseInt(childDiv.textContent)
+                this.players[0].tokens[`Yellow`] += 1
+                childDiv.textContent = count - 1
+                logToScreen(`${this.players[0].name} took a gold but could not reserve a card`)
+                this.goToNextPlayer();
             }
         })
     }

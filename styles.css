@@ -290,6 +290,9 @@ html, body {
 
 .PlayerRG { grid-area: PlayerRG; display: flex;}
 
+#currplayerYnum{
+  border-radius: 50%;
+}
 .ReservedCards { 
   grid-area: ReservedCards;
   border: 2px dotted darkred;
