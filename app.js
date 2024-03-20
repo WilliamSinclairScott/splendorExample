@@ -19,7 +19,8 @@ const classToColor = {
     ResourceU : `Blue`,
     ResourceR : `Red`,
     ResourceW : `White`,
-    ResourceB : `Black`
+    ResourceB : `Black`,
+    ResourceY : `Yellow`
 }
 
 const cardAreaZone3 = document.getElementById('Level3Zone')
@@ -183,8 +184,9 @@ class Game {
 
         //!resetlisteners if you need to 
 
-        let p = this.gameEndsIn === 0 ? `This is the Last Turn ${this.players[0].name}!` 
-                                      : `It is ${this.players[0].name}'s turn.`
+        let p = this.gameEndsIn === 0 
+        ? `This is the Last Turn ${this.players[0].name}!` 
+        : `It is ${this.players[0].name}'s turn.`
         logToScreen(p)
 
     }
@@ -242,7 +244,7 @@ class Game {
                         // Remove the clicked card
                         areaInQuestion.removeChild(clickedElement);
                         // Remove the card from the 'this.cardsOutOnTable' array
-                        this.cardsOutOnTable[k].splice(dynamicIndex, 1); // Assuming you always remove the last card
+                        this.cardsOutOnTable[k].splice(dynamicIndex, 1);
                         
                         // Replace the removed card with a new one and append a new event listener
                         areaInQuestion.appendChild(createNewCardElement(this.dealNewCardlevel(k)));
@@ -307,7 +309,9 @@ class Game {
         }
     }
 
-
+    /**
+     * 
+     */
     createClickListenersForGlobalResources = () => {
         const resources = document.querySelectorAll('.Resources > div');
         let lasterClickedResource = null;
@@ -388,11 +392,17 @@ class Game {
         //everything starts when Yellow Resource get's clicked
         let resourceY = document.getElementById('ResourceY')
         resourceY.addEventListener('click', () => {
-
+            //Add the gold to the player if there are any left
+            const childDiv = resourceY.querySelector('div')
+            const count = parseInt(childDiv.textContent)
+            if (count !== 0){
+                this.players[0].tokens[classToColor[`resourceY`]] += 1
+            }
+            // Remove all event listeners from the element
             function removeAllEventListeners(parentElement){
                 const children = parentElement.children;
                 Array.from(children).forEach(element => {
-                    // Remove all event listeners from the element
+                    
                     const clonedElement = element.cloneNode(true);
                     element.parentNode.replaceChild(clonedElement, element);
                 });
@@ -400,54 +410,54 @@ class Game {
             removeAllEventListeners(cardAreaZone1)
             removeAllEventListeners(cardAreaZone2)
             removeAllEventListeners(cardAreaZone3)
+
             //and disable all the other resources
             for(let color in globalResourcePool){
                 globalResourcePool[color].classList.add('disabled')
             }
-
-        })
-        for (let k = 1; k < 4; k++) {
-            let areaInQuestion;
-            // Determine areaInQuestion based on 'loop'
-            if (3 === k) areaInQuestion = cardAreaZone3;
-            else if (2 === k) areaInQuestion = cardAreaZone2;
-            else if (1 === k) areaInQuestion = cardAreaZone1;
             
-            const children = areaInQuestion.children;
-            
-            // Create a recursive event listener function with proper scoping
-            const recursiveAddEventListener = () => {
-                return (event) => {
-                    const clickedElement = event.currentTarget;
-                    const dynamicIndex = Array.from(clickedElement.parentElement.children).indexOf(clickedElement);
-                    // dynamicIndex is the index of clickedElement relative to its parent
-
-                    if (this.players[0].queryPlayerToBuy(this.cardsOutOnTable[k][dynamicIndex])) {
-                        // Remove the clicked card
-                        areaInQuestion.removeChild(clickedElement);
-                        // Remove the card from the 'this.cardsOutOnTable' array
-                        this.cardsOutOnTable[k].splice(dynamicIndex, 1); // Assuming you always remove the last card
-                        
-                        // Replace the removed card with a new one and append a new event listener
-                        areaInQuestion.appendChild(createNewCardElement(this.dealNewCardlevel(k)));
-                        const newCard = areaInQuestion.lastElementChild; // Get the newly added card
-                        // Add event listener to the new card
-                        newCard.addEventListener('click', recursiveAddEventListener());
-                        
-                        this.goToNextPlayer();
+            //Add a reservation listener to each card available.
+            for (let k = 1; k < 4; k++) {
+                let areaInQuestion;
+                // Determine areaInQuestion based on 'loop'
+                if (3 === k) areaInQuestion = cardAreaZone3;
+                else if (2 === k) areaInQuestion = cardAreaZone2;
+                else if (1 === k) areaInQuestion = cardAreaZone1;
+                
+                const children = areaInQuestion.children;
+                console.log()
+                // Add event listeners to all children
+                for (let i = 0; i < children.length; i++) {
+                    if (!children[i].hasEventListener) {
+                        children[i].addEventListener('click', (event) =>{
+                            const clickedElement = event.currentTarget;
+                            let index = i;
+                            //const dynamicIndex = Array.from(clickedElement.parentElement.children).indexOf(clickedElement);
+                            //reserve the card
+                            this.players[0].reserveCard(this.cardsOutOnTable[k][index])
+                            // Remove the clicked card
+                            areaInQuestion.removeChild(clickedElement);
+                            // Remove the card from the 'this.cardsOutOnTable' array
+                            this.cardsOutOnTable[k].splice(index, 1);
+                            // Replace the removed card with a new one and append a new event listener
+                            areaInQuestion.appendChild(createNewCardElement(this.dealNewCardlevel(k)));
+                            //Remove all of the Reservation Listeners
+                            removeAllEventListeners(cardAreaZone1)
+                            removeAllEventListeners(cardAreaZone2)
+                            removeAllEventListeners(cardAreaZone3)
+                            //Add the normal buy card listeners
+                            this.createClickListenersForResourceCards()
+                            //reEnable all other resources
+                            for(let color in globalResourcePool){
+                                globalResourcePool[color].classList.remove('disabled')
+                            }
+                            this.goToNextPlayer();
+                        });
+                        children[i].hasEventListener = true;
                     }
-                };
-            };
-            
-    
-            // Add event listeners to all children
-            for (let i = 0; i < children.length; i++) {
-                if (!children[i].hasEventListener) {
-                    children[i].addEventListener('click', recursiveAddEventListener());
-                    children[i].hasEventListener = true;
                 }
             }
-        }
+        })
     }
     /**
      *  checkes to see if current player gains any nobles
@@ -704,6 +714,10 @@ class Player {
         this.victoryPoints += cardObject.PV
         //Announce that it happened
         logToScreen(`${this.name} just purchased a ${cardObject.Color} worth ${cardObject.PV} points!`)
+    }
+
+    reserveCard = (cardObject) => {
+        this.reservedCards.push(cardObject)
     }
     /**
      * class noble {
