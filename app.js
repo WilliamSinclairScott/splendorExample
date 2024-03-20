@@ -130,7 +130,6 @@ class Game {
         currentPlayerArea.appendChild(player1Details.resources)
         //skipping element 0 as that player will fill the current player field.
         for (let index = 1; index < this.players.length; index++) {
-            // console.log(this.players[index])
             let html = generateOtherPlayerDetails(this.players[index])
             otherPlayers.insertAdjacentHTML('beforeend',html)
         }
@@ -190,13 +189,12 @@ class Game {
                     const clickedElement = event.currentTarget;
                     const dynamicIndex = Array.from(clickedElement.parentElement.children).indexOf(clickedElement);
                     // dynamicIndex is the index of clickedElement relative to its parent
-            
-                    if (this.queryPlayerToBuy(this.cardsOutOnTable[k][dynamicIndex])) {
+
+                    if (this.players[0].queryPlayerToBuy(this.cardsOutOnTable[k][dynamicIndex])) {
                         // Remove the clicked card
                         areaInQuestion.removeChild(clickedElement);
                         // Remove the card from the 'this.cardsOutOnTable' array
                         this.cardsOutOnTable[k].splice(dynamicIndex, 1); // Assuming you always remove the last card
-                        console.log(`Removed card from area ${k}`);
                         
                         // Replace the removed card with a new one and append a new event listener
                         areaInQuestion.appendChild(createNewCardElement(this.dealNewCardlevel(k)));
@@ -261,12 +259,8 @@ class Game {
             }
         }
     }
-    //
-    //!THIS IS WHERE YOU LEFT OFF
-    //
-    //!YOU NEED TO MAKE THIS LOGIC WORK CORRECTLY. SEE GPT FOR WHERE YOU WERE
-    //
-    //
+
+
     createClickListenersForGlobalResources = () => {
         const resources = document.querySelectorAll('.Resources > div');
         let lasterClickedResource = null;
@@ -338,27 +332,7 @@ class Game {
         }
         });
     }
-    /**
-     * Asks if player1 (current player) can buy the input card
-     * @param {*} cardInQuestion 
-     * @param {*} locationOfCard 
-     * @returns Bool of if player1 can or cannot buy input card
-     * !BUG REPORTED: HAVE ENOUGH AND CANNOT BUY!
-     */
-    queryPlayerToBuy = (cardInQuestion) => {
-        let canI = this.players[0].canBuyCard(cardInQuestion)
-        if (canI) {
-            this.players[0].buyCard(cardInQuestion,canI)
-            return true
-        }
 
-        else {
-            console.log(this.players[0].tokens)
-            let noGo = `You can not buy that card at this time! It is still ${this.players[0].name}'s turn`
-            logToScreen(noGo)
-            return false
-        }
-    }
     /**
      * Initializes the gamestate
      * !NEEDS WORK
@@ -418,7 +392,6 @@ class Game {
         currentPlayerArea.appendChild(player1Details.resources)
         //skipping element 0 as that player will fill the current player field.
         for (let index = 1; index < this.players.length; index++) {
-            // console.log(this.players[index])
             let html = generateOtherPlayerDetails(this.players[index])
             otherPlayers.insertAdjacentHTML('beforeend',html)
         }
@@ -436,19 +409,19 @@ class Player {
         this.id = playerID
         this.reservedCards = []
         this.tokens = {
-            Green: 10,
-            Blue: 10,
-            Red: 10,
-            White: 10,
-            Black: 10,
-            Yellow: 10
-        }
-        this.cards = {
             Green: 0,
             Blue: 0,
             Red: 0,
             White: 0,
-            Black: 0
+            Black: 0,
+            Yellow: 0
+        }
+        this.cards = {
+            Green: 10,
+            Blue: 10,
+            Red: 10,
+            White: 10,
+            Black: 10
         }
         this.victoryPoints = 0
         this.color = ''
@@ -465,6 +438,27 @@ class Player {
         }
         return false
     }
+        /**
+     * Asks if player1 (current player) can buy the input card
+     * @param {*} cardInQuestion 
+     * @param {*} locationOfCard 
+     * @returns Bool of if player1 can or cannot buy input card
+     * !BUG REPORTED: HAVE ENOUGH AND CANNOT BUY!
+     */
+        queryPlayerToBuy = (cardInQuestion) => {
+            let canI = this.canBuyCard(cardInQuestion)
+            if (canI) {
+                this.buyCard(cardInQuestion,canI)
+                return true
+            }
+    
+            else {
+                
+                let noGo = `You can not buy that card at this time! It is still ${this.name}'s turn`
+                logToScreen(noGo)
+                return false
+            }
+        }
     /**
      * Checks to see if the player can buy input card
      * @param {*} cardObject the card that you want to check if it can be bought
@@ -478,12 +472,7 @@ class Player {
         let red   = cardObject.Red < this.cards.Red   ? 0 : cardObject.Red - this.cards.Red  
         let white = cardObject.White < this.cards.White ? 0 : cardObject.White - this.cards.White
         // without the gold token (yellow)
-        console.log("check if more than equal to tokens")
-        console.log((this.tokens.Black >= black) &&
-            (this.tokens.Blue >=  blue)  &&
-            (this.tokens.Green >= green) &&
-            (this.tokens.Red >=   red)   &&
-            (this.tokens.White >= white))
+        
         if (
             this.tokens.Black >= black &&
             this.tokens.Blue >=  blue  &&
@@ -504,12 +493,11 @@ class Player {
             let colorTotals = [black,blue,green,red,white]
 
             //add up how many gold coins that equates to (x -- y = x + y)
-            let tokensReq = colorTotals.forEach(total => {
-                let sum = 0;
+            let sum = 0;
+            colorTotals.forEach(total => {
                 if (total < 0) {
                     sum = sum - total
                 }
-                return sum
             });
 
             //check to see if the ammount of yellow tokens the player has is enough
@@ -528,8 +516,6 @@ class Player {
      * @param {*} canBuyCard boolean used to make sure that we can actually buy the card!
      */
     buyCard = (cardObject,canBuyCard) => {
-
-        console.log(this.tokens)
         //have error check, if canBuyCard flase, throw error, we shouldn't be here.
         if (!canBuyCard){
             throw new Error('You can not buy this card, why did this happen!?');
@@ -554,24 +540,24 @@ class Player {
         let colorTotals = [black,blue,green,red,white]
         //rather than trying to use yellow tokens to buy with, see how many we need total
         //because we already know we can buy the card.
-        let yellowReq = colorTotals.forEach(total => {
-            let sum = 0;
+        let sum = 0;
+        colorTotals.forEach(total => {
             if (total < 0) {
                 sum = sum - total
             }
-            return (sum <= 0) ? 0 : sum
         });
+
         //updates values of the players tokens,
         this.tokens.Black  = black < 0 ? 0 : black
         this.tokens.Blue = blue < 0 ? 0 : blue
         this.tokens.Green = green < 0 ? 0 : green
         this.tokens.Red = red < 0 ? 0 : red
         this.tokens.White = white < 0 ? 0 : white
-        
-        this.tokens.Yellow = this.tokens.Yellow - yellowReq
+
+        this.tokens.Yellow = this.tokens.Yellow - sum
 
         // the color of the card aquired,
-        this.cards[cardObject.color] += 1
+        this.cards[cardObject.Color] += 1
         
         //and the pv.
         this.victoryPoints += cardObject.PV
@@ -615,7 +601,6 @@ const testPlayer2 = new Player(`Lily`,23456)
 
 const testGame = new Game(level1Objects,level2Objects, level3Objects, nobleObjects,
     testPlayer1,testPlayer2)
-
 testGame.initateGame()
 
 //------------------------functions below----------------------------------------
@@ -669,7 +654,6 @@ function generatePlayerDetails(player) {
 
             for (let i = 0; i < 2; i++) {
                 const colorDiv = document.createElement('div');
-                //console.log(player.tokens[resourceType])
                 colorDiv.className = resourceColors[resourceType];
                 //reminder if there is a problem with tokens and card count. 
                 colorDiv.textContent = i ? player.tokens[resourceType] : player.cards[resourceType];
