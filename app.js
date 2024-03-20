@@ -66,6 +66,7 @@ class Game {
             Yellow: 5
         }
         this.cardsOutOnTable = [[],[],[],[]] //where 0 = is noble cards and 1-3 are lvls for the cards.
+        this.gameEndsIn = NaN
     }
     /**
      * Initializes available tokens for the game based on the number of players
@@ -126,9 +127,36 @@ class Game {
             //!Prompt current player to remove token.
         }
 
-        //!Nobles
+        //Nobles
         this.checkForNobles()
+
         //!EndOfGame
+        if (this.gameEndsIn === NaN) {
+            if(this.players[0].victoryPoints >= 15){
+                //countDownInitiated to end so that everyone else get one extra turn
+                this.gameEndsIn = this.players.length-2
+                logToScreen(`the Game will end in ${this.gameEndsIn} turns.`)
+            }
+        }
+        else if (this.gameEndsIn > 0 ){
+            this.gameEndsIn -= 1
+        }
+        else if (this.gameEndsIn === 0){
+            //!End the Game
+
+            //disable all click events
+            this.disableClickListenersForResourceCards()
+            for(let color in globalResourcePool){
+                color.classList.add('disable')
+            }
+            
+            //figure out who won
+            let winner = this.players[0]
+            this.players.forEach(player => {
+                winner < player.victoryPoints
+            })
+        }
+        
 
         this.players.push(this.players.shift());
         //clear otherPlayers Area
@@ -147,7 +175,7 @@ class Game {
 
         //!resetlisteners if you need to 
 
-        let p = `It is ${this.players[0].name}'s turn.`
+        let p = this.gameEndsIn === 0 ? `GG WP` : `It is ${this.players[0].name}'s turn.`
         logToScreen(p)
 
     }
@@ -346,12 +374,25 @@ class Game {
      *  checkes to see if current player gains any nobles
      *  
      */
-    checkForNobles(){
-        this.cardsOutOnTable[0].forEach(noble => {
-            if (this.players[0].shouldHaveNoble(noble)){
-                //!take it logic
+    checkForNobles() {
+        this.cardsOutOnTable[0].forEach((noble, index) => {
+            if (this.players[0].shouldHaveNoble(noble)) {
+                // Player should have the noble, implement take it logic
+                //// console.log(`Take it`)
+                //// console.log(`PV: `,this.players[0].victoryPoints, noble.PV)
+                this.players[0].victoryPoints += noble.PV;
+                ////console.log(`PV: `,this.players[0].victoryPoints, noble.PV)
+                // Remove noble element from cardsOutOnTable
+                this.cardsOutOnTable[0].splice(index, 1);
+                //Remove noble element from HTML
+                nobleArea.children[index].remove()
+                //reset index as we just got rid of one
+                index -= 1
+                ////console.log(`Nobles on Board after: `, this.cardsOutOnTable[0])
+                
             }
-        })
+            ////console.log(`Dont Take`)
+        });
     }
     /**
      * Initializes the gamestate
@@ -437,11 +478,11 @@ class Player {
             Yellow: 0
         }
         this.cards = {
-            Green: 10,
-            Blue: 10,
-            Red: 10,
-            White: 10,
-            Black: 10
+            Green: 3,
+            Blue: 3,
+            Red: 3,
+            White: 3,
+            Black: 3
         }
         this.victoryPoints = 0
         this.color = ''
@@ -580,13 +621,37 @@ class Player {
         this.cards[cardObject.Color] += 1
         
         //and the pv.
+        ////console.log(`PV: `, this.victoryPoints, `+`, cardObject.PV)
         this.victoryPoints += cardObject.PV
         //Announce that it happened
         logToScreen(`${this.name} just purchased a ${cardObject.Color} worth ${cardObject.PV} points!`)
     }
-
+    /**
+     * class noble {
+        constructor(PV,black,blue,green,red,white){
+        this.PV = PV
+        this.Black = black
+        this.Blue = blue
+        this.Green = green
+        this.Red = red
+        this.White = white
+        }
+        }
+     * @param {*} noble 
+     * @returns bool if the player should have that noble
+     */
     shouldHaveNoble = (noble) => {
-        let should = false
+        ////console.log(`check if ${this.name} gains,`, noble ,this.cards)
+        let should = true
+        for(let keys in noble){
+            if(keys !== `PV`)
+            if(this.cards[keys] < noble[keys]) {
+                ////console.log(`No`)
+                should = false
+            }
+        }
+        ////should ? console.log('yes') : console.log(`No`)
+        return should
     }
 }
 /* Thinking out sudo code logic
