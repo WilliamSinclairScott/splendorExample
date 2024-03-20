@@ -385,17 +385,25 @@ class Game {
         });
     }
     createClickLisnersForYellowAndReservations = () => {
+        //everything starts when Yellow Resource get's clicked
         let resourceY = document.getElementById('ResourceY')
         resourceY.addEventListener('click', () => {
-            cardAreaZone1.children.forEach(element => {
-                element.removeEventListener()
-            });
-            cardAreaZone2.children.forEach(element => {
-                element.removeEventListener()
-            });
-            cardAreaZone3.children.forEach(element => {
-                element.removeEventListener()
-            });
+
+            function removeAllEventListeners(parentElement){
+                const children = parentElement.children;
+                Array.from(children).forEach(element => {
+                    // Remove all event listeners from the element
+                    const clonedElement = element.cloneNode(true);
+                    element.parentNode.replaceChild(clonedElement, element);
+                });
+            }
+            removeAllEventListeners(cardAreaZone1)
+            removeAllEventListeners(cardAreaZone2)
+            removeAllEventListeners(cardAreaZone3)
+            //and disable all the other resources
+            for(let color in globalResourcePool){
+                globalResourcePool[color].classList.add('disabled')
+            }
 
         })
         for (let k = 1; k < 4; k++) {
@@ -530,6 +538,7 @@ class Game {
         //create listeners for the cards. 
         this.createClickListenersForResourceCards()
         this.createClickListenersForGlobalResources()
+        this.createClickLisnersForYellowAndReservations()
     }
 }
 
@@ -993,4 +1002,3 @@ function shuffleArray(array) {
 
     return array;
 }
-
