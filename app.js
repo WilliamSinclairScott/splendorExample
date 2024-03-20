@@ -119,6 +119,17 @@ class Game {
     }
 
     goToNextPlayer = () => {
+        //Check for conditions before moving to next player
+
+        //TooManyTokens
+        if(!(this.players[0].hasTooManyTokens)){
+            //!Prompt current player to remove token.
+        }
+
+        //!Nobles
+        this.checkForNobles()
+        //!EndOfGame
+
         this.players.push(this.players.shift());
         //clear otherPlayers Area
         removeAllChildren(otherPlayers)
@@ -171,7 +182,7 @@ class Game {
     /**
      * Creates the "Buy card" Logic listener at each card. Recursive nature reassigns listener to new object when made
      * @param {*} areaInQuestion 
-     * !NEED TO ADD NOBLE CHECK LOGIC
+     * 
      */
     createClickListenersForResourceCards = () => {  
         for (let k = 1; k < 4; k++) {
@@ -201,8 +212,7 @@ class Game {
                         const newCard = areaInQuestion.lastElementChild; // Get the newly added card
                         // Add event listener to the new card
                         newCard.addEventListener('click', recursiveAddEventListener());
-            
-                        // !Check Noble conditions or proceed to the next player
+                        
                         this.goToNextPlayer();
                     }
                 };
@@ -332,7 +342,17 @@ class Game {
         }
         });
     }
-
+    /**
+     *  checkes to see if current player gains any nobles
+     *  
+     */
+    checkForNobles(){
+        this.cardsOutOnTable[0].forEach(noble => {
+            if (this.players[0].shouldHaveNoble(noble)){
+                //!take it logic
+            }
+        })
+    }
     /**
      * Initializes the gamestate
      * !NEEDS WORK
@@ -443,7 +463,7 @@ class Player {
      * @param {*} cardInQuestion 
      * @param {*} locationOfCard 
      * @returns Bool of if player1 can or cannot buy input card
-     * !BUG REPORTED: HAVE ENOUGH AND CANNOT BUY!
+     * 
      */
         queryPlayerToBuy = (cardInQuestion) => {
             let canI = this.canBuyCard(cardInQuestion)
@@ -561,6 +581,12 @@ class Player {
         
         //and the pv.
         this.victoryPoints += cardObject.PV
+        //Announce that it happened
+        logToScreen(`${this.name} just purchased a ${cardObject.Color} worth ${cardObject.PV} points!`)
+    }
+
+    shouldHaveNoble = (noble) => {
+        let should = false
     }
 }
 /* Thinking out sudo code logic
