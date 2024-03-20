@@ -175,8 +175,8 @@ class Game {
      * !NEED TO ADD NOBLE CHECK LOGIC
      */
     createClickListenersForResourceCards = () => {  
-        let areaInQuestion;     
         for (let k = 1; k < 4; k++) {
+            let areaInQuestion;
             // Determine areaInQuestion based on 'loop'
             if (3 === k) areaInQuestion = cardAreaZone3;
             else if (2 === k) areaInQuestion = cardAreaZone2;
@@ -184,33 +184,34 @@ class Game {
             
             const children = areaInQuestion.children;
             
-            
-                
-            // Create a recursive event listener function
+            // Create a recursive event listener function with proper scoping
             const recursiveAddEventListener = () => {
-                return () => { 
-                    // Returning a function to be used as an event listener
-                    // Always check if the card is available for purchase
-                    if (this.queryPlayerToBuy(this.cardsOutOnTable[k][2])) {
+                return (event) => {
+                    const clickedElement = event.currentTarget;
+                    const dynamicIndex = Array.from(clickedElement.parentElement.children).indexOf(clickedElement);
+                    // dynamicIndex is the index of clickedElement relative to its parent
+            
+                    if (this.queryPlayerToBuy(this.cardsOutOnTable[k][dynamicIndex])) {
                         // Remove the clicked card
-                        areaInQuestion.removeChild(this);
+                        areaInQuestion.removeChild(clickedElement);
                         // Remove the card from the 'this.cardsOutOnTable' array
-                        this.cardsOutOnTable[k].splice(2, 1); // Assuming you always remove the last card
-                        console.log(`Removed card`);
+                        this.cardsOutOnTable[k].splice(dynamicIndex, 1); // Assuming you always remove the last card
+                        console.log(`Removed card from area ${k}`);
                         
                         // Replace the removed card with a new one and append a new event listener
                         areaInQuestion.appendChild(createNewCardElement(this.dealNewCardlevel(k)));
                         const newCard = areaInQuestion.lastElementChild; // Get the newly added card
-                        newCard.addEventListener('click', recursiveAddEventListener()); // Add event listener to the new card
-                        
+                        // Add event listener to the new card
+                        newCard.addEventListener('click', recursiveAddEventListener());
+            
                         // !Check Noble conditions or proceed to the next player
                         this.goToNextPlayer();
                     }
                 };
             };
-        
+            
+    
             // Add event listeners to all children
-            //!make sure that other functions that remove listeners and add listeners also have the hasEventListener prop
             for (let i = 0; i < children.length; i++) {
                 if (!children[i].hasEventListener) {
                     children[i].addEventListener('click', recursiveAddEventListener());
@@ -219,6 +220,7 @@ class Game {
             }
         }
     }
+    
     /**
      * disables all resource Card listeners
      */
@@ -434,12 +436,12 @@ class Player {
         this.id = playerID
         this.reservedCards = []
         this.tokens = {
-            Green: 0,
-            Blue: 0,
-            Red: 0,
-            White: 0,
-            Black: 0,
-            Yellow: 0
+            Green: 10,
+            Blue: 10,
+            Red: 10,
+            White: 10,
+            Black: 10,
+            Yellow: 10
         }
         this.cards = {
             Green: 0,
@@ -476,6 +478,12 @@ class Player {
         let red   = cardObject.Red < this.cards.Red   ? 0 : cardObject.Red - this.cards.Red  
         let white = cardObject.White < this.cards.White ? 0 : cardObject.White - this.cards.White
         // without the gold token (yellow)
+        console.log("check if more than equal to tokens")
+        console.log((this.tokens.Black >= black) &&
+            (this.tokens.Blue >=  blue)  &&
+            (this.tokens.Green >= green) &&
+            (this.tokens.Red >=   red)   &&
+            (this.tokens.White >= white))
         if (
             this.tokens.Black >= black &&
             this.tokens.Blue >=  blue  &&
@@ -521,6 +529,7 @@ class Player {
      */
     buyCard = (cardObject,canBuyCard) => {
 
+        console.log(this.tokens)
         //have error check, if canBuyCard flase, throw error, we shouldn't be here.
         if (!canBuyCard){
             throw new Error('You can not buy this card, why did this happen!?');
@@ -543,7 +552,6 @@ class Player {
         red = this.tokens.Red     - red  
         white = this.tokens.White - white
         let colorTotals = [black,blue,green,red,white]
-
         //rather than trying to use yellow tokens to buy with, see how many we need total
         //because we already know we can buy the card.
         let yellowReq = colorTotals.forEach(total => {
@@ -551,15 +559,15 @@ class Player {
             if (total < 0) {
                 sum = sum - total
             }
-            return sum
+            return (sum <= 0) ? 0 : sum
         });
-
         //updates values of the players tokens,
         this.tokens.Black  = black < 0 ? 0 : black
         this.tokens.Blue = blue < 0 ? 0 : blue
         this.tokens.Green = green < 0 ? 0 : green
         this.tokens.Red = red < 0 ? 0 : red
         this.tokens.White = white < 0 ? 0 : white
+        
         this.tokens.Yellow = this.tokens.Yellow - yellowReq
 
         // the color of the card aquired,
