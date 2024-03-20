@@ -111,7 +111,7 @@ const nobleObjects = [
     new noble(3,0,4,4,0,0),
     new noble(3,4,0,0,4,0),
     new noble(3,0,4,0,0,4),
-    new noble(3,0,0,4,4,0),
+    new noble(3,0,0,4,4,0)
 ];
 // Splitting the CSV data into rows
 const rows = csvData.trim().split('\n').map(row => row.split(','));

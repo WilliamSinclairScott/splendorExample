@@ -277,32 +277,7 @@ html, body {
   width: 70%;
   height: 75%;
 }
-/* #currplayerGnum{
-  text-align: center;
-  width: 50%;
-}
-#currplayerUnum{
-  text-align: center;
-  width: 50%;
-}
-#currplayerRnum{
-  text-align: center;
-  width: 50%;
-}
-#currplayerBnum{
-  text-align: center;
-  width: 50%;
-}
-#currplayerWnum{
-  text-align: center;
-  width: 50%;
-}
-#currplayerYnum{
-  text-align: center;
-  width: 50%;
-  border-radius: 50%;
-  width: 33%;
-} */
+
 .PlayerRY { grid-area: PlayerRY; display: flex;}
 
 .PlayerRW { grid-area: PlayerRW; display: flex;}

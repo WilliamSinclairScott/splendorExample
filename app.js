@@ -66,7 +66,7 @@ class Game {
             Yellow: 5
         }
         this.cardsOutOnTable = [[],[],[],[]] //where 0 = is noble cards and 1-3 are lvls for the cards.
-        this.gameEndsIn = NaN
+        this.gameEndsIn = 100
     }
     /**
      * Initializes available tokens for the game based on the number of players
@@ -118,7 +118,10 @@ class Game {
         this.players.push(playerObject)
         this.playerCount += 1
     }
-
+    /**
+     * !Finish TooManyTokens
+     * !known issue saying This is XXX last turn after the game has ended
+     */
     goToNextPlayer = () => {
         //Check for conditions before moving to next player
 
@@ -131,15 +134,19 @@ class Game {
         this.checkForNobles()
 
         //!EndOfGame
-        if (this.gameEndsIn === NaN) {
+        ////console.log(this.gameEndsIn)
+        if (this.gameEndsIn === 100) {
+            ////console.log(`Check if game is going to end`, this.players[0].victoryPoints)
             if(this.players[0].victoryPoints >= 15){
                 //countDownInitiated to end so that everyone else get one extra turn
                 this.gameEndsIn = this.players.length-2
-                logToScreen(`the Game will end in ${this.gameEndsIn} turns.`)
+                if (this.gameEndsIn !== 0){logToScreen(`the Game will end in ${this.gameEndsIn} turns.`)}
             }
         }
         else if (this.gameEndsIn > 0 ){
             this.gameEndsIn -= 1
+            if (this.gameEndsIn !== 0){logToScreen(`the Game will end in ${this.gameEndsIn} turns.`)}
+            
         }
         else if (this.gameEndsIn === 0){
             //!End the Game
@@ -147,14 +154,15 @@ class Game {
             //disable all click events
             this.disableClickListenersForResourceCards()
             for(let color in globalResourcePool){
-                color.classList.add('disable')
+                globalResourcePool[color].classList.add('disabled')
             }
             
             //figure out who won
-            let winner = this.players[0]
+            let winner = this.players[this.players.length-1]
             this.players.forEach(player => {
-                winner < player.victoryPoints
+                winner.victoryPoints < player.victoryPoints ? winner = player : winner = winner
             })
+            logToScreen(`Congratulations ${winner.name}, you won!`)
         }
         
 
@@ -175,7 +183,8 @@ class Game {
 
         //!resetlisteners if you need to 
 
-        let p = this.gameEndsIn === 0 ? `GG WP` : `It is ${this.players[0].name}'s turn.`
+        let p = this.gameEndsIn === 0 ? `This is the Last Turn ${this.players[0].name}!` 
+                                      : `It is ${this.players[0].name}'s turn.`
         logToScreen(p)
 
     }
@@ -311,7 +320,6 @@ class Game {
                     this.disableClickListenersForResourceCards()
                     let hateY = document.getElementById('ResourceY')
                     hateY.classList.add('disabled')
-                    
 
                     const color = resource.id
                     const childDiv = resource.querySelector('div')
@@ -320,7 +328,7 @@ class Game {
                     
                     if ((lastClickedResource !== color) && (count !== 0)) { //first time
                         // Subtract 1 from the clicked resource's count add it to the resources 
-                        // and the current player's tokens
+                        // of the current player's tokens
                         childDiv.textContent = count - 1
                         //!Check to see if any of the tokens are too low to take from and disable them
                         this.players[0].tokens[classToColor[color]] += 1
@@ -355,7 +363,6 @@ class Game {
                         childDiv.textContent = count - 1
                         this.players[0].tokens[classToColor[color]]+= 1
                         //reset Logic
-                        //!Check to see if any of the tokens are high to take from and ENABLE them
                         let hateY = document.getElementById('ResourceY')
                         hateY.classList.remove('disabled')
                         resource.classList.remove('disabled')
@@ -366,13 +373,77 @@ class Game {
                         this.goToNextPlayer()
                         
                     }
+                    //must check first time at the end if that last resource is too small for the double click
+                    if (lastClickedResource !== null){
+                        let prev = document.getElementById(lastClickedResource)
+                        const childDiv = resource.querySelector('div')
+                        const numberIn = parseInt(childDiv.textContent)
+                        if (numberIn < 3) prev.classList.add('disabled')
+                    }
                 });
         }
         });
     }
+    createClickLisnersForYellowAndReservations = () => {
+        let resourceY = document.getElementById('ResourceY')
+        resourceY.addEventListener('click', () => {
+            cardAreaZone1.children.forEach(element => {
+                element.removeEventListener()
+            });
+            cardAreaZone2.children.forEach(element => {
+                element.removeEventListener()
+            });
+            cardAreaZone3.children.forEach(element => {
+                element.removeEventListener()
+            });
+
+        })
+        for (let k = 1; k < 4; k++) {
+            let areaInQuestion;
+            // Determine areaInQuestion based on 'loop'
+            if (3 === k) areaInQuestion = cardAreaZone3;
+            else if (2 === k) areaInQuestion = cardAreaZone2;
+            else if (1 === k) areaInQuestion = cardAreaZone1;
+            
+            const children = areaInQuestion.children;
+            
+            // Create a recursive event listener function with proper scoping
+            const recursiveAddEventListener = () => {
+                return (event) => {
+                    const clickedElement = event.currentTarget;
+                    const dynamicIndex = Array.from(clickedElement.parentElement.children).indexOf(clickedElement);
+                    // dynamicIndex is the index of clickedElement relative to its parent
+
+                    if (this.players[0].queryPlayerToBuy(this.cardsOutOnTable[k][dynamicIndex])) {
+                        // Remove the clicked card
+                        areaInQuestion.removeChild(clickedElement);
+                        // Remove the card from the 'this.cardsOutOnTable' array
+                        this.cardsOutOnTable[k].splice(dynamicIndex, 1); // Assuming you always remove the last card
+                        
+                        // Replace the removed card with a new one and append a new event listener
+                        areaInQuestion.appendChild(createNewCardElement(this.dealNewCardlevel(k)));
+                        const newCard = areaInQuestion.lastElementChild; // Get the newly added card
+                        // Add event listener to the new card
+                        newCard.addEventListener('click', recursiveAddEventListener());
+                        
+                        this.goToNextPlayer();
+                    }
+                };
+            };
+            
+    
+            // Add event listeners to all children
+            for (let i = 0; i < children.length; i++) {
+                if (!children[i].hasEventListener) {
+                    children[i].addEventListener('click', recursiveAddEventListener());
+                    children[i].hasEventListener = true;
+                }
+            }
+        }
+    }
     /**
      *  checkes to see if current player gains any nobles
-     *  
+     *  !Known error when multiple noble tokens are taken at the same, the middle one doesn't seem to be taken
      */
     checkForNobles() {
         this.cardsOutOnTable[0].forEach((noble, index) => {
@@ -420,8 +491,7 @@ class Game {
         for(let i = 0; i <= this.players.length; i++){
             createNobleCardAddToNobleZone(this.dealNewNobleCard())
         }
-        let p = `Cards are placed!`
-        logToScreen(p)
+
         //Initialize global tokens
         const startingResources = {
             "ResourceG": this.tokens.Green,
@@ -444,7 +514,7 @@ class Game {
         for (let i = 0; i < rotations; i++) {
             this.players.push(this.players.shift());
         }
-        p = `Player ${this.players[0].name} is going first!`
+        let p = `${this.players[0].name} is going first!`
         logToScreen(p)
 
         //initialize Player one.
@@ -478,11 +548,11 @@ class Player {
             Yellow: 0
         }
         this.cards = {
-            Green: 3,
-            Blue: 3,
-            Red: 3,
-            White: 3,
-            Black: 3
+            Green: 0,
+            Blue: 0,
+            Red: 0,
+            White: 0,
+            Black: 0
         }
         this.victoryPoints = 0
         this.color = ''
@@ -506,7 +576,7 @@ class Player {
      * @returns Bool of if player1 can or cannot buy input card
      * 
      */
-        queryPlayerToBuy = (cardInQuestion) => {
+    queryPlayerToBuy = (cardInQuestion) => {
             let canI = this.canBuyCard(cardInQuestion)
             if (canI) {
                 this.buyCard(cardInQuestion,canI)
@@ -519,7 +589,7 @@ class Player {
                 logToScreen(noGo)
                 return false
             }
-        }
+    }
     /**
      * Checks to see if the player can buy input card
      * @param {*} cardObject the card that you want to check if it can be bought
