@@ -239,8 +239,11 @@ class Game {
                     const clickedElement = event.currentTarget;
                     const dynamicIndex = Array.from(clickedElement.parentElement.children).indexOf(clickedElement);
                     // dynamicIndex is the index of clickedElement relative to its parent
-
-                    if (this.players[0].queryPlayerToBuy(this.cardsOutOnTable[k][dynamicIndex])) {
+                    let answer = this.players[0].queryPlayerToBuy(this.cardsOutOnTable[k][dynamicIndex])
+                    if (answer.didWe) {
+                        //repenishTokens
+                        console.log("Pay it back",answer.tokensUsed)
+                        updateResourceNumbers(answer.tokensUsed)
                         // Remove the clicked card
                         areaInQuestion.removeChild(clickedElement);
                         // Remove the card from the 'this.cardsOutOnTable' array
@@ -597,7 +600,7 @@ class Player {
             Red: 0,
             White: 0,
             Black: 0,
-            Yellow: 0
+            Yellow: 10
         }
         this.cards = {
             Green: 0,
@@ -625,21 +628,21 @@ class Player {
      * Asks if player1 (current player) can buy the input card
      * @param {*} cardInQuestion 
      * @param {*} locationOfCard 
-     * @returns Bool of if player1 can or cannot buy input card
+     * @returns {didWe boolean,tokensUsed {}} Bool of if player1 can or cannot buy input card
      * 
      */
     queryPlayerToBuy = (cardInQuestion) => {
             let canI = this.canBuyCard(cardInQuestion)
             if (canI) {
-                this.buyCard(cardInQuestion,canI)
-                return true
+                let spent = this.buyCard(cardInQuestion,canI)
+                return { didWe:true, tokensUsed: spent}
             }
     
             else {
                 
                 let noGo = `You can not buy that card at this time! It is still ${this.name}'s turn`
                 logToScreen(noGo)
-                return false
+                return { didWe:false, tokensUsed: {}}
             }
     }
     /**
@@ -697,13 +700,14 @@ class Player {
      * !I need to make it so that the tokens removed from the player return to the pool of global
      * @param {*} cardObject the card that player wants to buy.
      * @param {*} canBuyCard boolean used to make sure that we can actually buy the card!
+     * @returns special object used to replenish the tokens used by the player
      */
     buyCard = (cardObject,canBuyCard) => {
         //have error check, if canBuyCard flase, throw error, we shouldn't be here.
         if (!canBuyCard){
             throw new Error('You can not buy this card, why did this happen!?');
         }
-
+        console.log(cardObject)
 
         //do all the math before hand
 
@@ -713,7 +717,7 @@ class Player {
         let green = cardObject.Green < this.cards.Green ? 0 : cardObject.Green - this.cards.Green
         let red   = cardObject.Red < this.cards.Red   ? 0 : cardObject.Red - this.cards.Red  
         let white = cardObject.White < this.cards.White ? 0 : cardObject.White - this.cards.White
-
+        console.log(`After card reduce: black: ${black}, blue: ${blue}, green: ${green}, red: ${red}, white: ${white}`)
         //Figure out how much we can buy without yellow
         black = this.tokens.Black - black
         blue = this.tokens.Blue   - blue 
@@ -729,13 +733,22 @@ class Player {
                 sum = sum - total
             }
         });
-
+        console.log(`black: ${black}, blue: ${blue}, green: ${green}, red: ${red}, white: ${white}, yellow: ${sum}`)
+        //keep track what we spent to return to the global pool
+        const tokensUsed = {
+            "ResourceG": green < 0 ? this.tokens.Green: 0 -( green-this.tokens.Green) ,
+            "ResourceR":red < 0 ? this.tokens.Red :  0 - (red- this.tokens.Red),
+            "ResourceU": blue < 0 ? this.tokens.Blue : 0 - (blue- this.tokens.Blue),
+            "ResourceB": black < 0 ? this.tokens.Black: 0 - (black- this.tokens.Black),
+            "ResourceW": white < 0 ? this.tokens.White: 0 - (white- this.tokens.White),
+            "ResourceY": sum
+        }
         //updates values of the players tokens,
         this.tokens.Black  = black < 0 ? 0 : black
-        this.tokens.Blue = blue < 0 ? 0 : blue
-        this.tokens.Green = green < 0 ? 0 : green
-        this.tokens.Red = red < 0 ? 0 : red
-        this.tokens.White = white < 0 ? 0 : white
+        this.tokens.Blue =   blue < 0 ? 0 : blue
+        this.tokens.Green =  green < 0 ? 0 : green
+        this.tokens.Red =    red < 0 ? 0 : red
+        this.tokens.White =  white < 0 ? 0 : white
 
         this.tokens.Yellow = this.tokens.Yellow - sum
 
@@ -747,6 +760,8 @@ class Player {
         this.victoryPoints += cardObject.PV
         //Announce that it happened
         logToScreen(`${this.name} just purchased a ${cardObject.Color} worth ${cardObject.PV} points!`)
+
+        return tokensUsed
     }
 
     reserveCard = (cardObject) => {
@@ -989,7 +1004,8 @@ function updateResourceNumbers(newNumbers) {
         const resourceDiv = document.getElementById(resourceId);
         if (resourceDiv) {
             // Update the number inside the div
-            resourceDiv.querySelector('div').textContent = newNumbers[resourceId];
+            resourceDiv.querySelector('div').textContent = newNumbers[resourceId]  
+                + parseInt(resourceDiv.querySelector('div').textContent)
         }
     });
 }
