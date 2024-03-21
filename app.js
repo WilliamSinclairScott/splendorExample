@@ -306,7 +306,8 @@ class Game {
                 children[i].hasEventListener = true;
             }
         }
-        //and buttons
+        //!THIS IS WHERE YOU STOPPED YESTERDAY. PICK UP ON FIGURING OUT BUTTONS!
+        //and buttons 
         const buttons = document.querySelectorAll('.popupButton reserved');
         buttons.forEach(button => {
             button.addEventListener('click', () => {
@@ -573,8 +574,12 @@ class Game {
             }
         }
     }
-
-    // Method to create and show the popup
+    
+    /**
+     * !THIS IS WHERE YOU STOPPED YESTERDAY. PICK UP ON FIGURING OUT BUTTONS!
+     * @param {*} grandparent 
+     * @returns 
+     */
     showPopup = (grandparent) => {
     
     // Check if popup already exists, if yes, remove it
@@ -988,7 +993,7 @@ function generatePlayerDetails(player) {
     return {nameTag : nameTag, resources : playerResourcesDiv, reserved: playerReservedDiv };
 }
 /**
- * 
+ * !THIS IS WHERE YOU STOPPED YESTERDAY. PICK UP ON FIGURING OUT BUTTONS!
  * @param {*} player the player that needs to be added to OtherPlayers
  * @returns the html that contains that player's info to be appended to .OtherPlayers
  */

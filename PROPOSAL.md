@@ -18,7 +18,6 @@ https://excalidraw.com/#json=68RzJOtr1eUPzFFo-iiQK,IeHK-Y96LWXlnjhPsXv7nA
 
 - As a player, I want to understand what gameplay options are available to me, and which one's are not through highlighting and greyed out UI.
 - As a player, I would like to know whose turn it is so that I don't have to keep track.
-- As a player, I would like to be able to change my mind on what my gameplay decsion is through a confirmation button present on the UI.
 - As a player, I would like to have a history of player options
 - As a player, I would like to have visibility of all player resources.
 - As a player I would like to be able to restart the game after a win, loss or when everyone walks away from the game.
