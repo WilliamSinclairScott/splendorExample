@@ -307,13 +307,14 @@ class Game {
             }
         }
         //and buttons
-        // Event listener for button click
-        const button = document.getElementById('popupButton');
-        button.addEventListener('click', () => {
-        // Get the grandparent element
-        const grandparent = document.getElementById('popupButton').parentNode.parentNode;
-        this.showPopup(grandparent); // Pass grandparent as a parameter
-    });
+        const buttons = document.querySelectorAll('.popupButton reserved');
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Get the grandparent element
+                const grandparent = button.closest('.grandparent');
+                showPopup(grandparent); // Pass grandparent as a parameter
+            });
+});
     }
     /**
      * 
@@ -575,8 +576,9 @@ class Game {
 
     // Method to create and show the popup
     showPopup = (grandparent) => {
+    
     // Check if popup already exists, if yes, remove it
-    const existingPopup = document.querySelector('.popup');
+    const existingPopup = grandparent.querySelector('.popup');
     if (existingPopup) {
         existingPopup.remove();
         return;
@@ -588,26 +590,23 @@ class Game {
     popup.textContent = 'Popup Box';
 
     // Position the popup to the left of the button
-    const button = document.getElementById('popupButton');
+    const button = grandparent.querySelector('.popupButton');
     const buttonRect = button.getBoundingClientRect();
-    popup.style.left = buttonRect.left - popup.offsetWidth - 360 + 'px';
-    popup.style.top = buttonRect.top -20 + 'px';
+    popup.style.left = buttonRect.left - popup.offsetWidth +360 + 'px';
+    popup.style.top = buttonRect.top - 20 + 'px';
 
     // Close the popup when clicked
     popup.addEventListener('click', () => {
         popup.remove();
     });
 
-    // Append popup to the body
-    document.body.appendChild(popup);
+    // Append popup to the grandparent element
+    grandparent.appendChild(popup);
 
     // Close the popup after a set period of time (e.g., 5 seconds)
     setTimeout(() => {
         popup.remove();
     }, 5000); // Adjust time as needed
-
-    // Access grandparent element and do something with it
-    console.log("Grandparent element:", grandparent);
 }
 
     /**
@@ -894,29 +893,9 @@ class Player {
     }
 }
 /* Thinking out sudo code logic
-
-Player.actions
-    Click Gold(pile)
-        grey out UI on other tokens, dim everything but Card board
-        clickCard ? canReserve : throw(ErrorYouCan't)
-            Check player.reservedCards.length <= 3 ? 
-            Add game.thecardinquestion to player.reservedcards : 
-            prompt player that they can't do that, RE: give this.player.anotherAction
-    Click Token
-        check ammount of tokens in that set, redo listeners for just the coins available, grey out cards area.
-        if sameToken Color has 4 tokens, clickSameToken available
-            click it, subtract 2 from game.token[Color]. Add 2 to player.token[Color]
-        clickDifToken
-            regardless of sameToken, highlight OTHER colors.
-            clickDDifToken
-            RE above, this point two colors should be greyed out.
-            click last color, subtract selected colors from game.token[Colors]. Add to player.token[colors]
-
 Player.cleanup
     Check to see if they have more than 10 tokens, if so, prompt player to choose which tokens to discard.
          discard one token then RE: Player.cleanup
-    Check to see if they have enough cards to gain any available nobles
-    Check to see if they have initiated the END GAME
    
 
 */
@@ -925,12 +904,11 @@ Player.cleanup
 
 const testPlayer1 = new Player(`William`,12345)
 const testPlayer2 = new Player(`Lily`,23456)
-// const testPlayer3 = new Player(`Callum`,34657)
-// const testPlayer4 = new Player(`Sara`,45678)
-//  ,testPlayer3,testPlayer4
-
+const testPlayer3 = new Player(`Callum`,34657)
+const testPlayer4 = new Player(`Sara`,45678)
+//  
 const testGame = new Game(level1Objects,level2Objects, level3Objects, nobleObjects,
-    testPlayer1,testPlayer2)
+    testPlayer1,testPlayer2,testPlayer3,testPlayer4)
 testGame.initateGame()
 
 //------------------------functions below----------------------------------------
@@ -1015,7 +993,7 @@ function generatePlayerDetails(player) {
  * @returns the html that contains that player's info to be appended to .OtherPlayers
  */
 function generateOtherPlayerDetails(player) {
-    let html = `<div id="player${player.id}">
+    let html = `<div id="player${player.id}" class="otherPlayerBox">
         <span>${player.name}(${player.victoryPoints} VP)</span>
         <div>`;
     
@@ -1026,7 +1004,7 @@ function generateOtherPlayerDetails(player) {
         }">${count}</div>`;
     });
 
-    html += `<button id="popupButton" class="reserved">${player.reservedCards.length}</button>`;
+    html += `<button class="popupButton reserved">${player.reservedCards.length}</button>`;
     
     Object.entries(player.tokens).forEach(([color, count]) => {
         if (color !== 'Yellow') {
@@ -1040,8 +1018,6 @@ function generateOtherPlayerDetails(player) {
     html += `<div class="colorY">${player.tokens.Yellow}</div>
         </div>
       </div>`;
-
-    html += `<div id="ReservedCards"></div>`
     
     return html;
 }

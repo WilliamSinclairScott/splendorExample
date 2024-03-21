@@ -198,14 +198,20 @@ html, body {
   flex-direction: column-reverse;
 }
 
-#OtherPlayers div > div {
+.otherPlayerBox {
+  border: 2px solid brown;
+  height: 100%;
+  margin: 1%;
+}
+
+#OtherPlayers div div {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   max-width: calc(95%); /* Adjust the max-width to fit within the parent container */
 }
 
-#OtherPlayers div > div > div {
+#OtherPlayers div div div {
   flex-basis: calc(15%);
   height: 1rem;
   border: 2px solid whitesmoke;
@@ -219,7 +225,7 @@ html, body {
   color: whitesmoke;
 }
 
-#OtherPlayers div > div > div:nth-last-child(n+7) {
+#OtherPlayers div div div:nth-last-child(n+7) {
   border-radius: 25%;
   font-size: .5rem;
   color: whitesmoke;
@@ -227,7 +233,7 @@ html, body {
 
 .popup{
   position: absolute;
-  height: 80px;
+  height: 100px;
   width: 400px;
   display: flex;
   background-color: aqua;
