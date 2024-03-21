@@ -188,8 +188,10 @@ class Game {
             otherPlayers.insertAdjacentHTML('beforeend',html)
         }
 
-        //!resetlisteners if you need to 
-
+        //resetlisteners if you need to 
+        this.createClickListenersForResourceCards()
+        console.log("got here 193")
+        this.createClickListenersForReservedCards()
         let p = this.gameEndsIn === 0 
         ? `This is the Last Turn ${this.players[0].name}!` 
         : `It is ${this.players[0].name}'s turn.`
@@ -223,7 +225,6 @@ class Game {
         this.cardsOutOnTable[0].push(card)
         return card
     }
-    
     /**
      * Creates the "Buy card" Logic listener at each card. Recursive nature reassigns listener to new object when made
      * @param {*} areaInQuestion 
@@ -276,48 +277,36 @@ class Game {
             }
         }
     }
-    
     /**
-     * disables all resource Card listeners
+     * 
      */
-    disableClickListenersForResourceCards = () => {
-        let areaInQuestion;
-        for (let k = 1; k < 4; k++) {
-            // Determine areaInQuestion based on 'loop'
-            if (3 === k) areaInQuestion = cardAreaZone3;
-            else if (2 === k) areaInQuestion = cardAreaZone2;
-            else if (1 === k) areaInQuestion = cardAreaZone1;
-    
-            const children = areaInQuestion.children;
-            
-            // Loop through each child and disable click event listeners
-            for (let i = 0; i < children.length; i++) {
-                const child = children[i];
-                child.classList.add('disabled'); // Add the 'disable' class
+    createClickListenersForReservedCards = () => {
+        let areaInQuestion = currentPlayerArea
+        let children = areaInQuestion.children;
+        children = children[1].children
+        // Add event listeners to all children
+        for (let i = 0; i < children.length; i++) {
+            console.log(`there are ${this.players[0].reservedCards.length} reserved cards`)
+            if (!children[i].hasEventListener) {
+                children[i].addEventListener('click', (event) =>{
+                    const clickedElement = event.currentTarget;
+                    let index = i;
+                    //try buy the reserved card
+                    let answer = this.players[0].queryPlayerToBuy(this.players[0].reservedCards[index])
+                    if (answer.didWe) {
+                        //repenishTokens
+                        updateResourceNumbers(answer.tokensUsed)
+                        // Remove the clicked card
+                        areaInQuestion.removeChild(clickedElement);
+                        // Remove the card from that player's reserved array
+                        this.players[0].reservedCards.splice(index, 1);
+                        this.goToNextPlayer();
+                    }
+                });
+                children[i].hasEventListener = true;
             }
         }
     }
-    /**
-     * reEnables all resource Card listeners
-     */
-    enableClickListenersForResourceCards = () => {
-        let areaInQuestion;
-        for (let k = 1; k < 4; k++) {
-            // Determine areaInQuestion based on 'loop'
-            if (3 === k) areaInQuestion = cardAreaZone3;
-            else if (2 === k) areaInQuestion = cardAreaZone2;
-            else if (1 === k) areaInQuestion = cardAreaZone1;
-    
-            const children = areaInQuestion.children;
-            
-            // Loop through each child and disable click event listeners
-            for (let i = 0; i < children.length; i++) {
-                const child = children[i];
-                child.classList.remove('disabled'); // removes the 'disable' class
-            }
-        }
-    }
-
     /**
      * 
      */
@@ -447,6 +436,14 @@ class Game {
                 for(let color in globalResourcePool){
                     globalResourcePool[color].classList.add('disabled')
                 }
+                //and disable all reserved cards
+                //Note: Don't have to reEnable because we just delete these each time!
+                let kidArea = currentPlayerArea.children;
+                kidArea = kidArea[1].children;
+                for (let i = 0; i < kidArea.length; i++) {
+                    kidArea[i].classList.add('disabled');
+                }
+
                 
                 //Add a reservation listener to each card available.
                 for (let k = 1; k < 4; k++) {
@@ -466,7 +463,9 @@ class Game {
                                 let index = i;
                                 //const dynamicIndex = Array.from(clickedElement.parentElement.children).indexOf(clickedElement);
                                 //reserve the card
+                                ////console.log("462 Here I am reserving: ",this.cardsOutOnTable[k][index])
                                 this.players[0].reserveCard(this.cardsOutOnTable[k][index])
+                                ////console.log(this.players[0].reservedCards)
                                 // Remove the clicked card
                                 areaInQuestion.removeChild(clickedElement);
                                 // Remove the card from the 'this.cardsOutOnTable' array
@@ -525,6 +524,47 @@ class Game {
             ////console.log(`Dont Take`)
         });
     }
+    /**
+     * disables all resource Card listeners
+     */
+    disableClickListenersForResourceCards = () => {
+        let areaInQuestion;
+        for (let k = 1; k < 4; k++) {
+            // Determine areaInQuestion based on 'loop'
+            if (3 === k) areaInQuestion = cardAreaZone3;
+            else if (2 === k) areaInQuestion = cardAreaZone2;
+            else if (1 === k) areaInQuestion = cardAreaZone1;
+    
+            const children = areaInQuestion.children;
+            
+            // Loop through each child and disable click event listeners
+            for (let i = 0; i < children.length; i++) {
+                const child = children[i];
+                child.classList.add('disabled'); // Add the 'disable' class
+            }
+        }
+    }
+    /**
+     * reEnables all resource Card listeners
+     */
+    enableClickListenersForResourceCards = () => {
+        let areaInQuestion;
+        for (let k = 1; k < 4; k++) {
+            // Determine areaInQuestion based on 'loop'
+            if (3 === k) areaInQuestion = cardAreaZone3;
+            else if (2 === k) areaInQuestion = cardAreaZone2;
+            else if (1 === k) areaInQuestion = cardAreaZone1;
+    
+            const children = areaInQuestion.children;
+            
+            // Loop through each child and disable click event listeners
+            for (let i = 0; i < children.length; i++) {
+                const child = children[i];
+                child.classList.remove('disabled'); // removes the 'disable' class
+            }
+        }
+    }
+
     /**
      * Initializes the gamestate
      * !NEEDS WORK
@@ -596,6 +636,8 @@ class Game {
         this.createClickListenersForResourceCards()
         this.createClickListenersForGlobalResources()
         this.createClickLisnersForYellowAndReservations()
+        //noting never need to reserve cards at init
+        //this.createClickListenersForReservedCards()
     }
 }
 
