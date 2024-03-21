@@ -191,7 +191,7 @@ class Game {
         //resetlisteners if you need to 
         this.createClickListenersForResourceCards()
         console.log("got here 193")
-        this.createClickListenersForReservedCards()
+        this.createClickListenersForReservedCardsandButtons()
         let p = this.gameEndsIn === 0 
         ? `This is the Last Turn ${this.players[0].name}!` 
         : `It is ${this.players[0].name}'s turn.`
@@ -280,7 +280,7 @@ class Game {
     /**
      * 
      */
-    createClickListenersForReservedCards = () => {
+    createClickListenersForReservedCardsandButtons = () => {
         let areaInQuestion = currentPlayerArea
         let children = areaInQuestion.children;
         children = children[1].children
@@ -306,6 +306,14 @@ class Game {
                 children[i].hasEventListener = true;
             }
         }
+        //and buttons
+        // Event listener for button click
+        const button = document.getElementById('popupButton');
+        button.addEventListener('click', () => {
+        // Get the grandparent element
+        const grandparent = document.getElementById('popupButton').parentNode.parentNode;
+        this.showPopup(grandparent); // Pass grandparent as a parameter
+    });
     }
     /**
      * 
@@ -565,6 +573,43 @@ class Game {
         }
     }
 
+    // Method to create and show the popup
+    showPopup = (grandparent) => {
+    // Check if popup already exists, if yes, remove it
+    const existingPopup = document.querySelector('.popup');
+    if (existingPopup) {
+        existingPopup.remove();
+        return;
+    }
+
+    // Create popup element
+    const popup = document.createElement('div');
+    popup.classList.add('popup');
+    popup.textContent = 'Popup Box';
+
+    // Position the popup to the left of the button
+    const button = document.getElementById('popupButton');
+    const buttonRect = button.getBoundingClientRect();
+    popup.style.left = buttonRect.left - popup.offsetWidth - 360 + 'px';
+    popup.style.top = buttonRect.top -20 + 'px';
+
+    // Close the popup when clicked
+    popup.addEventListener('click', () => {
+        popup.remove();
+    });
+
+    // Append popup to the body
+    document.body.appendChild(popup);
+
+    // Close the popup after a set period of time (e.g., 5 seconds)
+    setTimeout(() => {
+        popup.remove();
+    }, 5000); // Adjust time as needed
+
+    // Access grandparent element and do something with it
+    console.log("Grandparent element:", grandparent);
+}
+
     /**
      * Initializes the gamestate
      * !NEEDS WORK
@@ -637,7 +682,7 @@ class Game {
         this.createClickListenersForGlobalResources()
         this.createClickLisnersForYellowAndReservations()
         //noting never need to reserve cards at init
-        //this.createClickListenersForReservedCards()
+        this.createClickListenersForReservedCardsandButtons()
     }
 }
 
@@ -981,7 +1026,7 @@ function generateOtherPlayerDetails(player) {
         }">${count}</div>`;
     });
 
-    html += `<button class="reserved">${player.reservedCards.length}</button>`;
+    html += `<button id="popupButton" class="reserved">${player.reservedCards.length}</button>`;
     
     Object.entries(player.tokens).forEach(([color, count]) => {
         if (color !== 'Yellow') {

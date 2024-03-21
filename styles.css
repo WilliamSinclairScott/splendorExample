@@ -225,6 +225,15 @@ html, body {
   color: whitesmoke;
 }
 
+.popup{
+  position: absolute;
+  height: 80px;
+  width: 400px;
+  display: flex;
+  background-color: aqua;
+  opacity: 80%;
+}
+
 /* ----------- current player information ---------------------*/
 #CurrentPlayer {  display: grid;
   grid-template-columns: 1fr 1.3fr;
