@@ -128,10 +128,12 @@ class Game {
 
         //TooManyTokens
         console.log(`start:`,new Date().getMilliseconds())
-        if((this.players[0].hasTooManyTokens)){
+        //!Highlight these meme
+        if((this.players[0].hasTooManyTokens())){
             logToScreen(`${this.players[0].name} has too many tokens! Select a token to be taken away!`)
+            console.log(`before waitForInput`)
             this.players[0].waitForInput()
-            // while(this.players[0].hasTooManyTokens){
+            // while(this.players[0].hasTooManyTokens()){
             // setTimeout(() => {console.log(`freezeframe`)},20000)
             // }
             
@@ -729,7 +731,7 @@ class Player {
      * @returns boolean if player has > 10 tokens
      */
     hasTooManyTokens = () => {
-        total = (this.tokens.Green + this.tokens.Blue + this.tokens.Red + 
+        let total = (this.tokens.Green + this.tokens.Blue + this.tokens.Red + 
                 this.tokens.White + this.tokens.Black + this.tokens.Yellow)
         if (total > 10) {
             return true
@@ -740,11 +742,11 @@ class Player {
      * 
      */
     async waitForInput() {
-        console.log(`waiting...`)
-        console.log(new Date().getMilliseconds())
-        const result = await this.waitForTokenSlection()
+        console.log(`Inside waitForInput`)
+        console.log(`Before waitForTokenSelection`,new Date().getMilliseconds())
+        const result = await this.waitForTokenSelection()
         try{
-            
+            console.log(`Inside try statement`)
             console.log(result)
             console.log(`Done. Moving on`)
         }
@@ -753,14 +755,14 @@ class Player {
             console.error('Reason for rejection:', error.message); // Access the error message
             console.error('Additional information:', error.data); // Access any additional data provided
         }
-        console.log(`Done waiting`)
+        console.log(`After Try catch`)
     }
     /**
      * 
      * @returns a promise for the button
      */
-    waitForTokenSlection() {
-        console.log(`freezeframe: `,new Date().getMilliseconds())
+    waitForTokenSelection() {
+        console.log(`Inside waitForTokenSelection: `,new Date().getMilliseconds())
         setTimeout(() => {console.log(`freezeframe`)},2000)
         return new Promise((resolve, reject) => {
             // console.log(`Looking for children to brand`);
