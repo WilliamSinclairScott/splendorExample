@@ -128,14 +128,33 @@ class Game {
 
         //TooManyTokens
         console.log(`start:`,new Date().getMilliseconds())
-        if((this.players[0].hasTooManyTokens)){
-            logToScreen(`${this.players[0].name} has too many tokens! Select a token to be taken away!`)
-            this.players[0].waitForInput()
-            // while(this.players[0].hasTooManyTokens){
-            // setTimeout(() => {console.log(`freezeframe`)},20000)
-            // }
+        this.players[0].hasTooManyTokens()
+        // if((this.players[0].hasTooManyTokens)){
+        //     logToScreen(`${this.players[0].name} has too many tokens! A random token will be taken away >:) !`)
+        //     while (this.players[0].hasTooManyTokens) {
+        //         console.log(`In we go`);
+                
+        //         let nonZero = 0;
+        //         for (const key of Object.keys(this.players[0].tokens)) {
+        //             if (this.players[0].tokens[key] !== 0) {
+        //                 nonZero++;
+        //             }
+        //         }
             
-        }
+        //         let random = Math.floor(Math.random() * nonZero);
+            
+        //         for (const key of Object.keys(this.players[0].tokens)) {
+        //             if (this.players[0].tokens[key] !== 0) {
+        //                 if (random === 0) {
+        //                     this.players[0].tokens[key]--;
+        //                     console.log(`reduced ${key} by one`)
+        //                     break; // Exit the loop after decrementing one token
+        //                 }
+        //                 random--;
+        //             }
+        //         }
+        //     }            
+        // }
         console.log(`end: `, new Date().getMilliseconds())
         //Nobles
         this.checkForNobles()
@@ -729,77 +748,18 @@ class Player {
      * @returns boolean if player has > 10 tokens
      */
     hasTooManyTokens = () => {
-        total = (this.tokens.Green + this.tokens.Blue + this.tokens.Red + 
+        console.log(`test`)
+        let total = (this.tokens.Green + this.tokens.Blue + this.tokens.Red + 
                 this.tokens.White + this.tokens.Black + this.tokens.Yellow)
+        console.log(total)
         if (total > 10) {
+            console.log(total)
             return true
         }
+        console.log(total)
         return false
     }
-    /**
-     * 
-     */
-    async waitForInput() {
-        console.log(`waiting...`)
-        console.log(new Date().getMilliseconds())
-        const result = await this.waitForTokenSlection()
-        try{
-            
-            console.log(result)
-            console.log(`Done. Moving on`)
-        }
-        catch(error){
-            console.error(`An error occurred: `, error)
-            console.error('Reason for rejection:', error.message); // Access the error message
-            console.error('Additional information:', error.data); // Access any additional data provided
-        }
-        console.log(`Done waiting`)
-    }
-    /**
-     * 
-     * @returns a promise for the button
-     */
-    waitForTokenSlection() {
-        console.log(`freezeframe: `,new Date().getMilliseconds())
-        setTimeout(() => {console.log(`freezeframe`)},2000)
-        return new Promise((resolve, reject) => {
-            // console.log(`Looking for children to brand`);
-            const playerResourcesDiv = currentPlayerArea.querySelector('.PlayerResources');
-            // console.log(playerResourcesDiv)
-            if (playerResourcesDiv) {
-                const children = playerResourcesDiv.children;
-                // console.log(children)
-                if (Array.from(children).length > 0) {
-                    //!technically need to go another child deep
-                    console.log(new Date().getMilliseconds())
-                    Array.from(children).forEach((child) => {
-                        if (!child.hasEventListener) {
-                            console.log(`made it inside`)
-                            child.addEventListener('click', () => {
-                                console.log(`got here`,child)
-                                console.log(child)
-                                this.tokens[child]--
-                                resolve(`${child} has been clicked`);
-                            });
-                            // console.log(`did the thing`)
-                            // setTimeout(() => {console.log(`freezeframe`)},2000)
-                            // console.log(`Freeze!`)
-                            //child.hasEventListener = true;
-                        }
-                    })
-                    
-                } else {
-                    console.log('No children found in playerResourcesDiv');
-                    reject('No children found in playerResourcesDiv');
-                }
-            } else {
-                console.log('PlayerResources div not found');
-                reject('PlayerResources div not found');
-            }
-        });
-    }
-    
-    
+
         /**
      * Asks if player1 (current player) can buy the input card
      * @param {*} cardInQuestion 
