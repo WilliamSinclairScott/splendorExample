@@ -127,35 +127,55 @@ class Game {
         //Check for conditions before moving to next player
 
         //TooManyTokens
-        console.log(`start:`,new Date().getMilliseconds())
-        this.players[0].hasTooManyTokens()
-        // if((this.players[0].hasTooManyTokens)){
-        //     logToScreen(`${this.players[0].name} has too many tokens! A random token will be taken away >:) !`)
-        //     while (this.players[0].hasTooManyTokens) {
-        //         console.log(`In we go`);
+        ////console.log(`start:`,new Date().getMilliseconds())
+        if((this.players[0].hasTooManyTokens())){
+            logToScreen(`${this.players[0].name} has too many tokens! A random token will be taken away >:) !`)
+            let countObj = {
+                Green: 0,
+                Blue: 0,
+                Red: 0,
+                White: 0,
+                Black: 0,
+                Yellow: 0
+            }
+            while(this.players[0].hasTooManyTokens()){
+                ////console.log(`In we go`);
                 
-        //         let nonZero = 0;
-        //         for (const key of Object.keys(this.players[0].tokens)) {
-        //             if (this.players[0].tokens[key] !== 0) {
-        //                 nonZero++;
-        //             }
-        //         }
+                let nonZero = 0;
+                for (const key of Object.keys(this.players[0].tokens)) {
+                    if (this.players[0].tokens[key] !== 0) {
+                        nonZero++;
+                    }
+                }
             
-        //         let random = Math.floor(Math.random() * nonZero);
+                let random = Math.floor(Math.random() * nonZero);
             
-        //         for (const key of Object.keys(this.players[0].tokens)) {
-        //             if (this.players[0].tokens[key] !== 0) {
-        //                 if (random === 0) {
-        //                     this.players[0].tokens[key]--;
-        //                     console.log(`reduced ${key} by one`)
-        //                     break; // Exit the loop after decrementing one token
-        //                 }
-        //                 random--;
-        //             }
-        //         }
-        //     }            
-        // }
-        console.log(`end: `, new Date().getMilliseconds())
+                for (const key of Object.keys(this.players[0].tokens)) {
+                    if (this.players[0].tokens[key] !== 0) {
+                        if (random === 0) {
+                            this.players[0].tokens[key]--
+                            this.tokens[key]++
+                            countObj[key]++
+                            ////console.log(`reduced ${key} by one`)
+                            break; // Exit the loop after decrementing one token
+                        }
+                        random--;
+                    }
+                }
+            }
+            console.log(countObj)
+            let newNumbers = {
+                "ResourceG": countObj[`Green`],
+                "ResourceR": countObj[`Red`],
+                "ResourceU": countObj[`Blue`],
+                "ResourceB": countObj[`Black`],
+                "ResourceW": countObj[`White`],
+                "ResourceY": countObj[`Yellow`]
+                };
+            console.log(newNumbers)
+            updateResourceNumbers(newNumbers)
+        }
+        ////console.log(`end: `, new Date().getMilliseconds())
         //Nobles
         this.checkForNobles()
 
@@ -196,7 +216,7 @@ class Game {
             logToScreen(`Congratulations ${winner.name}, you won!`)
         }
         
-        console.log(`TooFar: `, new Date().getMilliseconds())
+        ////console.log(`TooFar: `, new Date().getMilliseconds())
         this.players.push(this.players.shift());
         //clear otherPlayers Area
         removeAllChildren(otherPlayers)
@@ -315,7 +335,7 @@ class Game {
         children = children[1].children
         // Add event listeners to all children
         for (let i = 0; i < children.length; i++) {
-            console.log(`there are ${this.players[0].reservedCards.length} reserved cards`)
+            ////console.log(`there are ${this.players[0].reservedCards.length} reserved cards`)
             if (!children[i].hasEventListener) {
                 children[i].addEventListener('click', (event) =>{
                     const clickedElement = event.currentTarget;
@@ -335,16 +355,6 @@ class Game {
                 children[i].hasEventListener = true;
             }
         }
-        //!THIS IS WHERE YOU STOPPED YESTERDAY. PICK UP ON FIGURING OUT BUTTONS!
-        //and buttons 
-        const buttons = document.querySelectorAll('.popupButton reserved');
-        buttons.forEach(button => {
-            button.addEventListener('click', () => {
-                // Get the grandparent element
-                const grandparent = button.closest('.grandparent');
-                showPopup(grandparent); // Pass grandparent as a parameter
-            });
-});
     }
     /**
      * 
@@ -603,45 +613,6 @@ class Game {
             }
         }
     }
-    
-    /**
-     * !THIS IS WHERE YOU STOPPED YESTERDAY. PICK UP ON FIGURING OUT BUTTONS!
-     * @param {*} grandparent 
-     * @returns 
-     */
-    showPopup = (grandparent) => {
-    
-    // Check if popup already exists, if yes, remove it
-    const existingPopup = grandparent.querySelector('.popup');
-    if (existingPopup) {
-        existingPopup.remove();
-        return;
-    }
-
-    // Create popup element
-    const popup = document.createElement('div');
-    popup.classList.add('popup');
-    popup.textContent = 'Popup Box';
-
-    // Position the popup to the left of the button
-    const button = grandparent.querySelector('.popupButton');
-    const buttonRect = button.getBoundingClientRect();
-    popup.style.left = buttonRect.left - popup.offsetWidth +360 + 'px';
-    popup.style.top = buttonRect.top - 20 + 'px';
-
-    // Close the popup when clicked
-    popup.addEventListener('click', () => {
-        popup.remove();
-    });
-
-    // Append popup to the grandparent element
-    grandparent.appendChild(popup);
-
-    // Close the popup after a set period of time (e.g., 5 seconds)
-    setTimeout(() => {
-        popup.remove();
-    }, 5000); // Adjust time as needed
-}
 
     /**
      * Initializes the gamestate
@@ -748,15 +719,11 @@ class Player {
      * @returns boolean if player has > 10 tokens
      */
     hasTooManyTokens = () => {
-        console.log(`test`)
         let total = (this.tokens.Green + this.tokens.Blue + this.tokens.Red + 
                 this.tokens.White + this.tokens.Black + this.tokens.Yellow)
-        console.log(total)
         if (total > 10) {
-            console.log(total)
             return true
         }
-        console.log(total)
         return false
     }
 
@@ -1043,7 +1010,7 @@ function generateOtherPlayerDetails(player) {
         }">${count}</div>`;
     });
 
-    html += `<button class="popupButton reserved">${player.reservedCards.length}</button>`;
+    html += `<button class="reserved">${player.reservedCards.length}</button>`;
     
     Object.entries(player.tokens).forEach(([color, count]) => {
         if (color !== 'Yellow') {
@@ -1183,3 +1150,54 @@ function shuffleArray(array) {
 
     return array;
 }
+
+
+// /**
+//      * !THIS IS WHERE YOU STOPPED YESTERDAY. PICK UP ON FIGURING OUT BUTTONS!
+//      * @param {*} grandparent 
+//      * @returns 
+//      */
+//     showPopup = (grandparent) => {
+        
+//     // Check if popup already exists, if yes, remove it
+//     const existingPopup = grandparent.querySelector('.popup');
+//     if (existingPopup) {
+//         existingPopup.remove();
+//         return;
+//     }
+
+//     // Create popup element
+//     const popup = document.createElement('div');
+//     popup.classList.add('popup');
+//     popup.textContent = 'Popup Box';
+
+//     // Position the popup to the left of the button
+//     const button = grandparent.querySelector('.popupButton');
+//     const buttonRect = button.getBoundingClientRect();
+//     popup.style.left = buttonRect.left - popup.offsetWidth +360 + 'px';
+//     popup.style.top = buttonRect.top - 20 + 'px';
+
+//     // Close the popup when clicked
+//     popup.addEventListener('click', () => {
+//         popup.remove();
+//     });
+
+//     // Append popup to the grandparent element
+//     grandparent.appendChild(popup);
+
+//     // Close the popup after a set period of time (e.g., 5 seconds)
+//     setTimeout(() => {
+//         popup.remove();
+//     }, 5000); // Adjust time as needed
+
+//     //THIS IS WHERE YOU STOPPED YESTERDAY. PICK UP ON FIGURING OUT BUTTONS!
+//         //and buttons 
+//         const buttons = document.querySelectorAll('.popupButton reserved');
+//         buttons.forEach(button => {
+//             button.addEventListener('click', () => {
+//                 // Get the grandparent element
+//                 const grandparent = button.closest('.grandparent');
+//                 //showPopup(grandparent); // Pass grandparent as a parameter
+//             });
+// });
+// }
