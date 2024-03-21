@@ -127,10 +127,16 @@ class Game {
         //Check for conditions before moving to next player
 
         //TooManyTokens
-        if(!(this.players[0].hasTooManyTokens)){
-            //!Prompt current player to remove token.
+        console.log(`start:`,new Date().getMilliseconds())
+        if((this.players[0].hasTooManyTokens)){
+            logToScreen(`${this.players[0].name} has too many tokens! Select a token to be taken away!`)
+            this.players[0].waitForInput()
+            // while(this.players[0].hasTooManyTokens){
+            // setTimeout(() => {console.log(`freezeframe`)},20000)
+            // }
+            
         }
-
+        console.log(`end: `, new Date().getMilliseconds())
         //Nobles
         this.checkForNobles()
 
@@ -157,7 +163,12 @@ class Game {
             for(let color in globalResourcePool){
                 globalResourcePool[color].classList.add('disabled')
             }
-            
+            let kidArea = currentPlayerArea.children;
+            kidArea = kidArea[1].children;
+            for (let i = 0; i < kidArea.length; i++) {
+                kidArea[i].classList.add('disabled');
+            }
+
             //figure out who won
             let winner = this.players[this.players.length-1]
             this.players.forEach(player => {
@@ -166,7 +177,7 @@ class Game {
             logToScreen(`Congratulations ${winner.name}, you won!`)
         }
         
-
+        console.log(`TooFar: `, new Date().getMilliseconds())
         this.players.push(this.players.shift());
         //clear otherPlayers Area
         removeAllChildren(otherPlayers)
@@ -190,7 +201,6 @@ class Game {
 
         //resetlisteners if you need to 
         this.createClickListenersForResourceCards()
-        console.log("got here 193")
         this.createClickListenersForReservedCardsandButtons()
         let p = this.gameEndsIn === 0 
         ? `This is the Last Turn ${this.players[0].name}!` 
@@ -278,7 +288,7 @@ class Game {
         }
     }
     /**
-     * 
+     * !THIS MIGHT BE WRONG
      */
     createClickListenersForReservedCardsandButtons = () => {
         let areaInQuestion = currentPlayerArea
@@ -697,10 +707,10 @@ class Player {
         this.id = playerID
         this.reservedCards = []
         this.tokens = {
-            Green: 0,
-            Blue: 0,
-            Red: 0,
-            White: 0,
+            Green: 3,
+            Blue: 3,
+            Red: 3,
+            White: 3,
             Black: 0,
             Yellow: 0
         }
@@ -726,6 +736,70 @@ class Player {
         }
         return false
     }
+    /**
+     * 
+     */
+    async waitForInput() {
+        console.log(`waiting...`)
+        console.log(new Date().getMilliseconds())
+        const result = await this.waitForTokenSlection()
+        try{
+            
+            console.log(result)
+            console.log(`Done. Moving on`)
+        }
+        catch(error){
+            console.error(`An error occurred: `, error)
+            console.error('Reason for rejection:', error.message); // Access the error message
+            console.error('Additional information:', error.data); // Access any additional data provided
+        }
+        console.log(`Done waiting`)
+    }
+    /**
+     * 
+     * @returns a promise for the button
+     */
+    waitForTokenSlection() {
+        console.log(`freezeframe: `,new Date().getMilliseconds())
+        setTimeout(() => {console.log(`freezeframe`)},2000)
+        return new Promise((resolve, reject) => {
+            // console.log(`Looking for children to brand`);
+            const playerResourcesDiv = currentPlayerArea.querySelector('.PlayerResources');
+            // console.log(playerResourcesDiv)
+            if (playerResourcesDiv) {
+                const children = playerResourcesDiv.children;
+                // console.log(children)
+                if (Array.from(children).length > 0) {
+                    //!technically need to go another child deep
+                    console.log(new Date().getMilliseconds())
+                    Array.from(children).forEach((child) => {
+                        if (!child.hasEventListener) {
+                            console.log(`made it inside`)
+                            child.addEventListener('click', () => {
+                                console.log(`got here`,child)
+                                console.log(child)
+                                this.tokens[child]--
+                                resolve(`${child} has been clicked`);
+                            });
+                            // console.log(`did the thing`)
+                            // setTimeout(() => {console.log(`freezeframe`)},2000)
+                            // console.log(`Freeze!`)
+                            //child.hasEventListener = true;
+                        }
+                    })
+                    
+                } else {
+                    console.log('No children found in playerResourcesDiv');
+                    reject('No children found in playerResourcesDiv');
+                }
+            } else {
+                console.log('PlayerResources div not found');
+                reject('PlayerResources div not found');
+            }
+        });
+    }
+    
+    
         /**
      * Asks if player1 (current player) can buy the input card
      * @param {*} cardInQuestion 
@@ -940,7 +1014,7 @@ function logToScreen(pHTML){
  * reminder if there is a problem with tokens and card count.
  * Also Might add reserved cards and VP logic here
  * @param {*} player player 1 details
- * @returns {nameTag : nameTag, resources : playerResourcesDiv, reserved: playerReservedDiv }
+ * @returns {nameTag : nameTagHTML, resources : playerResourcesDiv, reserved: playerReservedDiv }
  * 
  */
 function generatePlayerDetails(player) {
