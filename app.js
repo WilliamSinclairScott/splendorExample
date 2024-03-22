@@ -1,10 +1,4 @@
-/**
- * 
- * Importing all my data from another file for ease on scaling later.
- * 
- */
 import { level1Objects, level2Objects, level3Objects, nobleObjects } from './csv.js';
-
 
 // Global Variables
 const colorToClass = {
@@ -38,9 +32,9 @@ const globalResourcePool = {
     'White': document.getElementById('ResourceW'),
     'Yellow': document.getElementById('ResourceY')
 };
+
 let actionCounter = 0
 
-//
 class Game {
     /**
      * Each array is a deck of Deck Objects predefined in the database
@@ -173,7 +167,7 @@ class Game {
                 "ResourceY": countObj[`Yellow`]
                 };
             console.log(newNumbers)
-            updateResourceNumbers(newNumbers)
+            addResourceNumbers(newNumbers)
         }
         ////console.log(`end: `, new Date().getMilliseconds())
         //Nobles
@@ -252,28 +246,32 @@ class Game {
      * @returns nextCardObject In Array
      */
     dealNewCardlevel = (number) => {
-        if(number === 1){
-            let card = this.lvlOneDeck.pop()
-            this.cardsOutOnTable[number].push(card)
-            return card
-        }else if(number === 2){
-            let card = this.lvlTwoDeck.pop()
-            this.cardsOutOnTable[number].push(card)
-            return card
-        }else if(number === 3){
-            let card = this.lvlThreeDeck.pop()
-            this.cardsOutOnTable[number].push(card)
-            return card
-        }
-        else{
+        if (number === 1) {
+            this.cardsOutOnTable[number].push(this.lvlOneDeck.shift());
+            let card = this.cardsOutOnTable[number].slice(-1)[0];
+            return card;
+        } else if (number === 2) {
+            this.cardsOutOnTable[number].push(this.lvlTwoDeck.shift());
+            let card = this.cardsOutOnTable[number].slice(-1)[0];
+            return card;
+        } else if (number === 3) {
+            this.cardsOutOnTable[number].push(this.lvlThreeDeck.shift());
+            let card = this.cardsOutOnTable[number].slice(-1)[0];
+            return card;
+        } else {
             throw new Error('Invalid level of card!');
         }
-    }
+    };
+    /**
+     * 
+     * @returns card
+     */
     dealNewNobleCard = () => {
-        let card = this.nobleDeck.pop()
+        console.log(this.cardsOutOnTable[0])
+        let card = this.cardsOutOnTable[0].shift();
         this.cardsOutOnTable[0].push(card)
-        return card
-    }
+        return card;
+    };
     /**
      * Creates the "Buy card" Logic listener at each card. Recursive nature reassigns listener to new object when made
      * @param {*} areaInQuestion 
@@ -299,7 +297,7 @@ class Game {
                     if (answer.didWe) {
                         //repenishTokens
                         console.log("Pay it back",answer.tokensUsed)
-                        updateResourceNumbers(answer.tokensUsed)
+                        addResourceNumbers(answer.tokensUsed)
                         // Remove the clicked card
                         areaInQuestion.removeChild(clickedElement);
                         // Remove the card from the 'this.cardsOutOnTable' array
@@ -344,7 +342,7 @@ class Game {
                     let answer = this.players[0].queryPlayerToBuy(this.players[0].reservedCards[index])
                     if (answer.didWe) {
                         //repenishTokens
-                        updateResourceNumbers(answer.tokensUsed)
+                        addResourceNumbers(answer.tokensUsed)
                         // Remove the clicked card
                         areaInQuestion.removeChild(clickedElement);
                         // Remove the card from that player's reserved array
@@ -562,11 +560,11 @@ class Game {
                 this.players[0].victoryPoints += noble.PV;
                 ////console.log(`PV: `,this.players[0].victoryPoints, noble.PV)
                 // Remove noble element from cardsOutOnTable
-                this.cardsOutOnTable[0].splice(index, 1);
+                //this.cardsOutOnTable[0].splice(index, 1);
                 //Remove noble element from HTML
                 nobleArea.children[index].remove()
                 //reset index as we just got rid of one
-                index -= 1
+                index --
                 ////console.log(`Nobles on Board after: `, this.cardsOutOnTable[0])
                 
             }
@@ -613,7 +611,6 @@ class Game {
             }
         }
     }
-
     /**
      * Initializes the gamestate
      * !NEEDS WORK
@@ -640,7 +637,6 @@ class Game {
         for(let i = 0; i <= this.players.length; i++){
             createNobleCardAddToNobleZone(this.dealNewNobleCard())
         }
-
         //Initialize global tokens
         const startingResources = {
             "ResourceG": this.tokens.Green,
@@ -651,7 +647,7 @@ class Game {
             "ResourceY": this.tokens.Yellow
         }
 
-        updateResourceNumbers(startingResources)
+        addResourceNumbers(startingResources)
 
         //Randomly choose starting player and then from there, set them to index0 in the players array.
         this.chooseStartingPlayer();
@@ -687,11 +683,10 @@ class Game {
         this.createClickLisnersForYellowAndReservations()
         //noting never need to reserve cards at init
         this.createClickListenersForReservedCardsandButtons()
+        restartGameListener()
     }
 }
-
 class Player {
-
     constructor(playerName, playerID) {
         this.name = playerName
         this.id = playerID
@@ -726,7 +721,6 @@ class Player {
         }
         return false
     }
-
         /**
      * Asks if player1 (current player) can buy the input card
      * @param {*} cardInQuestion 
@@ -866,7 +860,6 @@ class Player {
 
         return tokensUsed
     }
-
     reserveCard = (cardObject) => {
         this.reservedCards.push(cardObject)
     }
@@ -898,23 +891,15 @@ class Player {
         return should
     }
 }
-/* Thinking out sudo code logic
-Player.cleanup
-    Check to see if they have more than 10 tokens, if so, prompt player to choose which tokens to discard.
-         discard one token then RE: Player.cleanup
-   
-
-*/
-
 /* --------------------------------------Actual Code Begins ------------------------------------------------------- */
 
 const testPlayer1 = new Player(`William`,12345)
-const testPlayer2 = new Player(`Grant`,23456)
+const testPlayer2 = new Player(`Lily`,23456)
 const testPlayer3 = new Player(`Callum`,34657)
 const testPlayer4 = new Player(`Sara`,45678)
-//  ,testPlayer3,testPlayer4
 const testGame = new Game(level1Objects,level2Objects, level3Objects, nobleObjects,
     testPlayer1,testPlayer2, testPlayer3, testPlayer4)
+
 testGame.initateGame()
 
 //------------------------functions below----------------------------------------
@@ -1030,8 +1015,6 @@ function generateOtherPlayerDetails(player) {
     
     return html;
 }
-
-
 /**
  * Used in initateGame to add the noble cards to the board
  * @param {*} nobleInstance 
@@ -1040,7 +1023,7 @@ function createNobleCardAddToNobleZone(nobleInstance) {
     // Create the main container for the noble card
     const nobleCardContainer = document.createElement('div');
     nobleCardContainer.classList.add('nobleCardContainer');
-
+    //console.log(nobleInstance)
     // Map resource colors to their corresponding values in the noble instance
     const resourceColors = {
         'Black': nobleInstance.Black,
@@ -1072,7 +1055,6 @@ function createNobleCardAddToNobleZone(nobleInstance) {
         console.error('Element with ID NobleZone not found.');
     }
 }
-
 /**
  * format input such that:
  * const newNumbers = {
@@ -1085,7 +1067,7 @@ function createNobleCardAddToNobleZone(nobleInstance) {
     };
  * @param {*} newNumbers 
  */
-function updateResourceNumbers(newNumbers) {
+function addResourceNumbers(newNumbers) {
     // Iterate over each resource ID
     Object.keys(newNumbers).forEach(resourceId => {
         // Find the div element with the corresponding ID
@@ -1097,7 +1079,6 @@ function updateResourceNumbers(newNumbers) {
         }
     });
 }
-
 /**
  * Used to create a new div to display using the cardObject
  * @param {*} cardObject 
@@ -1153,54 +1134,54 @@ function shuffleArray(array) {
 
     return array;
 }
-
-
-// /**
-//      * !THIS IS WHERE YOU STOPPED YESTERDAY. PICK UP ON FIGURING OUT BUTTONS!
-//      * @param {*} grandparent 
-//      * @returns 
-//      */
-//     showPopup = (grandparent) => {
+/**
+ * restarts the game
+ */
+function restartGameListener(){
+    //console.log(theGame)
+    document.addEventListener('keydown', (event) => {
         
-//     // Check if popup already exists, if yes, remove it
-//     const existingPopup = grandparent.querySelector('.popup');
-//     if (existingPopup) {
-//         existingPopup.remove();
-//         return;
-//     }
+        if (event.key === 'r') { // Change 'r' to the desired key
+            
+            const newNumbers = {
+                "ResourceG": 0,
+                "ResourceR": 0,
+                "ResourceU": 0,
+                "ResourceB": 0,
+                "ResourceW": 0,
+                "ResourceY": 0
+                };
+            //reset the game board
+            removeAllChildren(cardAreaZone3)
+            removeAllChildren(cardAreaZone2)
+            removeAllChildren(cardAreaZone1)
+            removeAllChildren(otherPlayers)
+            removeAllChildren(nobleArea)
+            removeAllChildren(currentPlayerArea)
+            removeAllChildren(logArea)
+            // Iterate over each resource ID
+            Object.keys(newNumbers).forEach(resourceId => {
+                // Find the div element with the corresponding ID
+                const resourceDiv = document.getElementById(resourceId);
+                if (resourceDiv) {
+                    // Update the number inside the div
+                    resourceDiv.querySelector('div').textContent = parseInt(resourceDiv.querySelector('div').textContent) 
+                    - parseInt(resourceDiv.querySelector('div').textContent)
+                }
+            });
+            // createGameStructure();
+            
+            actionCounter = 0
+            
+            const testPlayer1 = new Player(`William`,12345)
+            const testPlayer2 = new Player(`Lily`,23456)
+            const testPlayer3 = new Player(`Callum`,34657)
+            const testPlayer4 = new Player(`Sara`,45678)
 
-//     // Create popup element
-//     const popup = document.createElement('div');
-//     popup.classList.add('popup');
-//     popup.textContent = 'Popup Box';
-
-//     // Position the popup to the left of the button
-//     const button = grandparent.querySelector('.popupButton');
-//     const buttonRect = button.getBoundingClientRect();
-//     popup.style.left = buttonRect.left - popup.offsetWidth +360 + 'px';
-//     popup.style.top = buttonRect.top - 20 + 'px';
-
-//     // Close the popup when clicked
-//     popup.addEventListener('click', () => {
-//         popup.remove();
-//     });
-
-//     // Append popup to the grandparent element
-//     grandparent.appendChild(popup);
-
-//     // Close the popup after a set period of time (e.g., 5 seconds)
-//     setTimeout(() => {
-//         popup.remove();
-//     }, 5000); // Adjust time as needed
-
-//     //THIS IS WHERE YOU STOPPED YESTERDAY. PICK UP ON FIGURING OUT BUTTONS!
-//         //and buttons 
-//         const buttons = document.querySelectorAll('.popupButton reserved');
-//         buttons.forEach(button => {
-//             button.addEventListener('click', () => {
-//                 // Get the grandparent element
-//                 const grandparent = button.closest('.grandparent');
-//                 //showPopup(grandparent); // Pass grandparent as a parameter
-//             });
-// });
-// }
+            let newGame = new Game(level1Objects, level2Objects, level3Objects, nobleObjects,
+                testPlayer1, testPlayer2, testPlayer3, testPlayer4)
+            
+            newGame.initateGame()
+        }
+    });
+}
