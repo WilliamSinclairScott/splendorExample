@@ -1,5 +1,7 @@
 import { level1Objects, level2Objects, level3Objects, nobleObjects } from './csv.js';
-
+const importDecks1 = level1Objects
+const importDecks2 = level2Objects
+const importDecks3 = level3Objects
 // Global Variables
 const colorToClass = {
     Green : 'colorG',
@@ -247,16 +249,19 @@ class Game {
      */
     dealNewCardlevel = (number) => {
         if (number === 1) {
-            this.cardsOutOnTable[number].push(this.lvlOneDeck.shift());
-            let card = this.cardsOutOnTable[number].slice(-1)[0];
+            let card = this.lvlOneDeck.shift()
+            this.lvlOneDeck.push(card)
+            this.cardsOutOnTable[number].push(card);
             return card;
         } else if (number === 2) {
-            this.cardsOutOnTable[number].push(this.lvlTwoDeck.shift());
-            let card = this.cardsOutOnTable[number].slice(-1)[0];
+            let card = this.lvlTwoDeck.shift()
+            this.lvlTwoDeck.push(card)
+            this.cardsOutOnTable[number].push(card);
             return card;
         } else if (number === 3) {
-            this.cardsOutOnTable[number].push(this.lvlThreeDeck.shift());
-            let card = this.cardsOutOnTable[number].slice(-1)[0];
+            let card = this.lvlThreeDeck.shift()
+            this.lvlThreeDeck.push(card)
+            this.cardsOutOnTable[number].push(card);
             return card;
         } else {
             throw new Error('Invalid level of card!');
@@ -267,9 +272,11 @@ class Game {
      * @returns card
      */
     dealNewNobleCard = () => {
-        console.log(this.cardsOutOnTable[0])
-        let card = this.cardsOutOnTable[0].shift();
+        console.log(this.nobleDeck[0])
+        let card = this.nobleDeck.shift();
         this.cardsOutOnTable[0].push(card)
+        this.nobleDeck.push(card)
+        console.log(card);
         return card;
     };
     /**
@@ -893,10 +900,14 @@ class Player {
 }
 /* --------------------------------------Actual Code Begins ------------------------------------------------------- */
 
+importDecks1
+importDecks2
+importDecks3
 const testPlayer1 = new Player(`William`,12345)
 const testPlayer2 = new Player(`Lily`,23456)
 const testPlayer3 = new Player(`Callum`,34657)
 const testPlayer4 = new Player(`Sara`,45678)
+console.log(level3Objects);
 const testGame = new Game(level1Objects,level2Objects, level3Objects, nobleObjects,
     testPlayer1,testPlayer2, testPlayer3, testPlayer4)
 
@@ -1177,7 +1188,7 @@ function restartGameListener(){
             const testPlayer2 = new Player(`Lily`,23456)
             const testPlayer3 = new Player(`Callum`,34657)
             const testPlayer4 = new Player(`Sara`,45678)
-
+            console.log(level3Objects);
             let newGame = new Game(level1Objects, level2Objects, level3Objects, nobleObjects,
                 testPlayer1, testPlayer2, testPlayer3, testPlayer4)
             
