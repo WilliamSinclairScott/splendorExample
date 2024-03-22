@@ -697,10 +697,10 @@ class Player {
         this.id = playerID
         this.reservedCards = []
         this.tokens = {
-            Green: 3,
-            Blue: 3,
-            Red: 3,
-            White: 3,
+            Green: 0,
+            Blue: 0,
+            Red: 0,
+            White: 0,
             Black: 0,
             Yellow: 0
         }
@@ -810,7 +810,7 @@ class Player {
         if (!canBuyCard){
             throw new Error('You can not buy this card, why did this happen!?');
         }
-        console.log(cardObject)
+        ////console.log(cardObject)
 
         //do all the math before hand
 
@@ -820,7 +820,7 @@ class Player {
         let green = cardObject.Green < this.cards.Green ? 0 : cardObject.Green - this.cards.Green
         let red   = cardObject.Red < this.cards.Red   ? 0 : cardObject.Red - this.cards.Red  
         let white = cardObject.White < this.cards.White ? 0 : cardObject.White - this.cards.White
-        console.log(`After card reduce: black: ${black}, blue: ${blue}, green: ${green}, red: ${red}, white: ${white}`)
+        ////console.log(`After card reduce: black: ${black}, blue: ${blue}, green: ${green}, red: ${red}, white: ${white}`)
         //Figure out how much we can buy without yellow
         black = this.tokens.Black - black
         blue = this.tokens.Blue   - blue 
@@ -836,7 +836,7 @@ class Player {
                 sum = sum - total
             }
         });
-        console.log(`black: ${black}, blue: ${blue}, green: ${green}, red: ${red}, white: ${white}, yellow: ${sum}`)
+        ////console.log(`black: ${black}, blue: ${blue}, green: ${green}, red: ${red}, white: ${white}, yellow: ${sum}`)
         //keep track what we spent to return to the global pool
         const tokensUsed = {
             "ResourceG": green < 0 ? this.tokens.Green: 0 -( green-this.tokens.Green) ,
@@ -909,16 +909,19 @@ Player.cleanup
 /* --------------------------------------Actual Code Begins ------------------------------------------------------- */
 
 const testPlayer1 = new Player(`William`,12345)
-const testPlayer2 = new Player(`Lily`,23456)
+const testPlayer2 = new Player(`Grant`,23456)
 const testPlayer3 = new Player(`Callum`,34657)
 const testPlayer4 = new Player(`Sara`,45678)
-//  
+//  ,testPlayer3,testPlayer4
 const testGame = new Game(level1Objects,level2Objects, level3Objects, nobleObjects,
-    testPlayer1,testPlayer2,testPlayer3,testPlayer4)
+    testPlayer1,testPlayer2, testPlayer3, testPlayer4)
 testGame.initateGame()
 
 //------------------------functions below----------------------------------------
-
+/**
+ * Removes all children from the parent. Social services.
+ * @param {*} parent what you want to remove
+ */
 function removeAllChildren(parent) {
     if (parent) {
         while (parent.firstChild) {

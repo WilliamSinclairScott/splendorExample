@@ -1,5 +1,5 @@
 html, body {
-  background-color: blanchedalmond;
+  background-color: grey;
   height: 100%;
   margin: 0; 
   padding: 0;
@@ -59,6 +59,10 @@ html, body {
   border: 2px solid whitesmoke;
   border-radius: 30px;
   justify-content: space-between;
+  margin: 2px;
+}
+.cardContainer:hover{
+  border: 3px solid yellow;
 }
 .victorypointValue{
   width: 100%;
@@ -109,6 +113,10 @@ html, body {
   margin: 2% 2% 2% 2%;
 }
 
+.Resources div :hover {
+  border: 3px solid yellow;
+}
+
 .Resources div > div {
   color: white;
   text-align: center;
@@ -151,18 +159,22 @@ html, body {
 #ResourceY div{
   color: black;
   background: gold;
-  color: black !important;
-  border: 1px solid black  !important;
+  color: black;
+  border: 1px solid black;
 }
-
+#ResourceY div:hover{
+  border: 3px solid yellow;
+}
 #ResourceW { grid-area: 5 / 1 / 6 / 2; }
 #ResourceW div{
   color: black;
   background: whitesmoke;
-  color: black !important;
-  border: 1px solid black  !important;
+  color: black;
+  border: 1px solid black;
 }
-
+#ResourceW div:hover{
+  border: 3px solid yellow;
+}
 /* ----------------Noble Card area-------------------------------------------- */
 #NobleZone {
   grid-area: NobleZone;  
@@ -180,6 +192,7 @@ html, body {
   justify-content: space-evenly;
   align-items: center;
   background: saddlebrown;
+  margin: 2px;
 }
 .nobleRequire{
   height: 100%;
@@ -194,12 +207,10 @@ html, body {
 #OtherPlayers {
   grid-area: OtherPlayers;
   display: flex;
-  border: 2px dotted darkmagenta;
   flex-direction: column-reverse;
 }
 
 .otherPlayerBox {
-  border: 2px solid brown;
   height: 100%;
   margin: 1%;
 }
@@ -213,24 +224,32 @@ html, body {
 
 #OtherPlayers div div div {
   flex-basis: calc(15%);
-  height: 1rem;
+  height: 50%;
   border: 2px solid whitesmoke;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: .8rem; /* Adjust as needed */
+  font-size: 10%; /* Adjust as needed */
   margin-bottom: 2px;
   font-size: .5rem;
   color: whitesmoke;
 }
-
+#OtherPlayers div div .colorW {
+  background: whitesmoke;
+  color: black;
+  border: 1px solid black;
+}
 #OtherPlayers div div div:nth-last-child(n+7) {
   border-radius: 25%;
-  font-size: .5rem;
+  font-size:75%;
   color: whitesmoke;
 }
-
+#OtherPlayers div div .colorW:nth-last-child(n+7) {
+  background: whitesmoke;
+  color: black;
+  border: 1px solid black;
+}
 .popup{
   position: absolute;
   height: 100px;
@@ -292,6 +311,16 @@ html, body {
   width: 70%;
   height: 75%;
 }
+.PlayerResources div .colorW:last-child{
+  background: whitesmoke;
+  color: black;
+  border: 1px solid black;
+}
+.PlayerResources div .colorW:first-child{
+  background: whitesmoke;
+  color: black;
+  border: 1px solid black;
+}
 
 .PlayerRY { grid-area: PlayerRY; display: flex;}
 
@@ -334,7 +363,7 @@ html, body {
 }
 
 #LogBox { grid-area: LogBox;
-  background: slategrey; 
+  background: white; 
   height:100%;
   width: 100%;
   display: flex;
@@ -344,13 +373,12 @@ html, body {
   border: 1px solid #ccc; /* Optional: Add border for better visibility */
 }
 #LogBox p {
-  color: rgb(187, 201, 209);
-  font-size: .7rem;
+  color: black;
+  font-size: 100%;
   margin: 2px 5px 1px 0;
   padding: 0 0 0 25%;
   border-bottom: 2px solid rgb(86, 103, 121);
 }
-
 /* Color pallets for demo */
 .colorG{
   background: green;
@@ -366,11 +394,11 @@ html, body {
 }
 .colorW{
   background: whitesmoke;
-  color: black !important;
-  border: 1px solid black  !important;
+  color: black;
+  border: 1px solid black;
 }
 .colorY{
   background: gold;
-  color: black !important;
-  border: 1px solid black  !important;
+  color: black;
+  border: 1px solid black;
 }
