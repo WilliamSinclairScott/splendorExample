@@ -16,6 +16,8 @@ This project serves as a demonstration of how the Splendor game mechanics can be
 
 To play the Splendor Example game, follow these steps:
 
+Understand the game that you are going to be playing:  https://www.spacecowboys.fr/_files/ugd/59baa2_17984c1d5d0b45a6ae3cdc695c0a864e.pdf
+
 Clone the repository:
 git clone https://github.com/WilliamSinclairScott/splendorExample.git
 
