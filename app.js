@@ -159,7 +159,7 @@ class Game {
                     }
                 }
             }
-            console.log(countObj)
+            //console.log(countObj)
             let newNumbers = {
                 "ResourceG": countObj[`Green`],
                 "ResourceR": countObj[`Red`],
@@ -168,7 +168,7 @@ class Game {
                 "ResourceW": countObj[`White`],
                 "ResourceY": countObj[`Yellow`]
                 };
-            console.log(newNumbers)
+            //console.log(newNumbers)
             addResourceNumbers(newNumbers)
         }
         ////console.log(`end: `, new Date().getMilliseconds())
@@ -271,11 +271,11 @@ class Game {
      * @returns card
      */
     dealNewNobleCard = () => {
-        console.log(this.nobleDeck[0])
+        //console.log(this.nobleDeck[0])
         let card = this.nobleDeck.shift();
         this.cardsOutOnTable[0].push(card)
         this.nobleDeck.push(card)
-        console.log(card);
+        //console.log(card);
         return card;
     };
     /**
@@ -302,7 +302,7 @@ class Game {
                     let answer = this.players[0].queryPlayerToBuy(this.cardsOutOnTable[k][dynamicIndex])
                     if (answer.didWe) {
                         //repenishTokens
-                        console.log("Pay it back",answer.tokensUsed)
+                        //console.log("Pay it back",answer.tokensUsed)
                         addResourceNumbers(answer.tokensUsed)
                         // Remove the clicked card
                         areaInQuestion.removeChild(clickedElement);
@@ -507,7 +507,7 @@ class Game {
                     else if (1 === k) areaInQuestion = cardAreaZone1;
                     
                     const children = areaInQuestion.children;
-                    console.log()
+                    //console.log()
                     // Add event listeners to all children
                     for (let i = 0; i < children.length; i++) {
                         if (!children[i].hasEventListener) {
@@ -617,7 +617,7 @@ class Game {
             }
         }
     }
-}
+
 
     /**
      * Initializes the gamestate
@@ -908,7 +908,7 @@ const testPlayer1 = new Player(`William`,12345)
 const testPlayer2 = new Player(`Lily`,23456)
 const testPlayer3 = new Player(`Callum`,34657)
 const testPlayer4 = new Player(`Sara`,45678)
-console.log(level3Objects);
+//console.log(level3Objects);
 const testGame = new Game(level1Objects,level2Objects, level3Objects, nobleObjects,
     testPlayer1,testPlayer2, testPlayer3, testPlayer4)
 
@@ -1189,7 +1189,7 @@ function restartGameListener(){
             const testPlayer2 = new Player(`Lily`,23456)
             const testPlayer3 = new Player(`Callum`,34657)
             const testPlayer4 = new Player(`Sara`,45678)
-            console.log(level3Objects);
+            //console.log(level3Objects);
             let newGame = new Game(level1Objects, level2Objects, level3Objects, nobleObjects,
                 testPlayer1, testPlayer2, testPlayer3, testPlayer4)
             
