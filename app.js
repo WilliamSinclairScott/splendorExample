@@ -120,8 +120,8 @@ class Game {
         this.playerCount += 1
     }
     /**
-     * !Finish TooManyTokens
-     * !known issue saying This is XXX last turn after the game has ended
+     *
+     *
      */
     goToNextPlayer = () => {
         //Check for conditions before moving to next player
@@ -140,7 +140,6 @@ class Game {
         //Nobles
         this.checkForNobles()
 
-        //!EndOfGame
         ////console.log(this.gameEndsIn)
         if (this.gameEndsIn === 100) {
             ////console.log(`Check if game is going to end`, this.players[0].victoryPoints)
@@ -288,7 +287,7 @@ class Game {
         }
     }
     /**
-     * !THIS MIGHT BE WRONG
+     *
      */
     createClickListenersForReservedCardsandButtons = () => {
         let areaInQuestion = currentPlayerArea
@@ -316,16 +315,6 @@ class Game {
                 children[i].hasEventListener = true;
             }
         }
-        //!THIS IS WHERE YOU STOPPED YESTERDAY. PICK UP ON FIGURING OUT BUTTONS!
-        //and buttons 
-        const buttons = document.querySelectorAll('.popupButton reserved');
-        buttons.forEach(button => {
-            button.addEventListener('click', () => {
-                // Get the grandparent element
-                const grandparent = button.closest('.grandparent');
-                showPopup(grandparent); // Pass grandparent as a parameter
-            });
-});
     }
     /**
      * 
@@ -425,7 +414,7 @@ class Game {
         });
     }
     /**
-     * !few bugs when there isn't enough resources, will visit later
+     * 
      */
     createClickLisnersForYellowAndReservations = () => {
         //everything starts when Yellow Resource get's clicked
@@ -522,7 +511,7 @@ class Game {
     }
     /**
      *  checkes to see if current player gains any nobles
-     *  !Known error when multiple noble tokens are taken at the same, the middle one doesn't seem to be taken
+     *  Known error when multiple noble tokens are taken at the same, the middle one doesn't seem to be taken
      */
     checkForNobles() {
         this.cardsOutOnTable[0].forEach((noble, index) => {
@@ -584,49 +573,11 @@ class Game {
             }
         }
     }
-    
-    /**
-     * !THIS IS WHERE YOU STOPPED YESTERDAY. PICK UP ON FIGURING OUT BUTTONS!
-     * @param {*} grandparent 
-     * @returns 
-     */
-    showPopup = (grandparent) => {
-    
-    // Check if popup already exists, if yes, remove it
-    const existingPopup = grandparent.querySelector('.popup');
-    if (existingPopup) {
-        existingPopup.remove();
-        return;
-    }
-
-    // Create popup element
-    const popup = document.createElement('div');
-    popup.classList.add('popup');
-    popup.textContent = 'Popup Box';
-
-    // Position the popup to the left of the button
-    const button = grandparent.querySelector('.popupButton');
-    const buttonRect = button.getBoundingClientRect();
-    popup.style.left = buttonRect.left - popup.offsetWidth +360 + 'px';
-    popup.style.top = buttonRect.top - 20 + 'px';
-
-    // Close the popup when clicked
-    popup.addEventListener('click', () => {
-        popup.remove();
-    });
-
-    // Append popup to the grandparent element
-    grandparent.appendChild(popup);
-
-    // Close the popup after a set period of time (e.g., 5 seconds)
-    setTimeout(() => {
-        popup.remove();
-    }, 5000); // Adjust time as needed
 }
 
     /**
      * Initializes the gamestate
-     * !NEEDS WORK
+     * 
      */
     initateGame = () => {
         //There should be a prompt for asking how many players.
@@ -707,10 +658,10 @@ class Player {
         this.id = playerID
         this.reservedCards = []
         this.tokens = {
-            Green: 3,
-            Blue: 3,
-            Red: 3,
-            White: 3,
+            Green: 0,
+            Blue: 0,
+            Red: 0,
+            White: 0,
             Black: 0,
             Yellow: 0
         }
@@ -770,7 +721,7 @@ class Player {
                 const children = playerResourcesDiv.children;
                 // console.log(children)
                 if (Array.from(children).length > 0) {
-                    //!technically need to go another child deep
+                    //technically need to go another child deep
                     console.log(new Date().getMilliseconds())
                     Array.from(children).forEach((child) => {
                         if (!child.hasEventListener) {
@@ -1067,7 +1018,7 @@ function generatePlayerDetails(player) {
     return {nameTag : nameTag, resources : playerResourcesDiv, reserved: playerReservedDiv };
 }
 /**
- * !THIS IS WHERE YOU STOPPED YESTERDAY. PICK UP ON FIGURING OUT BUTTONS!
+ * 
  * @param {*} player the player that needs to be added to OtherPlayers
  * @returns the html that contains that player's info to be appended to .OtherPlayers
  */
@@ -1083,7 +1034,7 @@ function generateOtherPlayerDetails(player) {
         }">${count}</div>`;
     });
 
-    html += `<button class="popupButton reserved">${player.reservedCards.length}</button>`;
+    html += `<button class="reserved">${player.reservedCards.length}</button>`;
     
     Object.entries(player.tokens).forEach(([color, count]) => {
         if (color !== 'Yellow') {
