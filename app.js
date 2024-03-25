@@ -705,7 +705,7 @@ class Player {
             Red: 0,
             White: 0,
             Black: 0,
-            Yellow: 0
+            Yellow: 13
         }
         this.cards = {
             Green: 0,
@@ -714,7 +714,7 @@ class Player {
             White: 0,
             Black: 0
         }
-        this.victoryPoints = 0
+        this.victoryPoints = 14
         this.color = ''
     }
     /**
@@ -904,10 +904,10 @@ class Player {
 importDecks1
 importDecks2
 importDecks3
-const testPlayer1 = new Player(`William`,12345)
-const testPlayer2 = new Player(`Lily`,23456)
-const testPlayer3 = new Player(`Callum`,34657)
-const testPlayer4 = new Player(`Sara`,45678)
+const testPlayer1 = new Player(`Player 1`,12345)
+const testPlayer2 = new Player(`Player 2`,23456)
+const testPlayer3 = new Player(`Player 3`,34657)
+const testPlayer4 = new Player(`Player 4`,45678)
 //console.log(level3Objects);
 const testGame = new Game(level1Objects,level2Objects, level3Objects, nobleObjects,
     testPlayer1,testPlayer2, testPlayer3, testPlayer4)
