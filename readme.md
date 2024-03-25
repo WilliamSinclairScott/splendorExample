@@ -16,6 +16,8 @@ This project serves as a demonstration of how the Splendor game mechanics can be
 
 To play the Splendor Example game, follow these steps:
 
+Understand the game that you are going to be playing:  https://www.spacecowboys.fr/_files/ugd/59baa2_17984c1d5d0b45a6ae3cdc695c0a864e.pdf
+
 Clone the repository:
 git clone https://github.com/WilliamSinclairScott/splendorExample.git
 
@@ -31,6 +33,7 @@ Let me know if you need any further assistance!
 <h2>Screenshots</h2>
 
 ![image](https://github.com/WilliamSinclairScott/splendorExample/assets/60750816/97eaaa2f-a285-4b0b-8ddf-fa14d4867fa2)
+![image](https://github.com/WilliamSinclairScott/splendorExample/assets/60750816/be6b7e47-3ce6-423b-b178-723f3a0faafb)
 
 
 <h2>Timeline</h2><table><thead><tr><th>Date</th><th>MVP Items</th><th>Goal Met</th><th>Notes</th></tr></thead><tbody><tr><td>2024-03-12</td><td>Initialize Player and GameState classes, add shuffle function</td><td>Y</td><td></td></tr><tr><td>2024-03-15</td><td>Add CSV.js for working with data locally, finalize card model idea, CSS for proof of concept</td><td>Y</td><td></td></tr><tr><td>2024-03-17</td><td>Demo noble zone CSS, progress on HTML and CSS, module out app and CSV data</td><td>Y</td><td></td></tr><tr><td>2024-03-18</td><td>Finish Player resource system, implement logbox, progress on HTML and CSS</td><td>Y</td><td></td></tr><tr><td>2024-03-19</td><td>Make resource tokens, polish nobles display</td><td>Y</td><td></td></tr><tr><td>2024-03-20</td><td>Progress on playerResources, add methods to Player class</td><td>Y</td><td></td></tr><tr><td>2024-03-21</td><td>Finish Player resource system, start work on OtherPlayers, complete initateGame function</td><td>Y</td><td></td></tr><tr><td>2024-03-22</td><td>Implement restart functionality, add favicon</td><td>Y</td><td></td></tr></tbody></table>
