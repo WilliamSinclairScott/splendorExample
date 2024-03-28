@@ -946,7 +946,7 @@ function logToScreen(pHTML){
  */
 function generatePlayerDetails(player) {
     //make tag for player 1
-    let nameTag = `<span id="player${player.id}">${player.name}(${player.victoryPoints} VP)</span>`
+    let nameTag = `<span id="   player${player.id}">${player.name}(${player.victoryPoints} VP)</span>`
     // Create the div element for player resources
     const playerResourcesDiv = document.createElement('div')
     playerResourcesDiv.className = 'PlayerResources'
